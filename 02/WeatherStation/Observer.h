@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include <set>
 #include <functional>
+#include <set>
 
 /*
 Шаблонный интерфейс IObserver. Его должен реализовывать класс, 
@@ -26,9 +26,9 @@ class IObservable
 {
 public:
 	virtual ~IObservable() = default;
-	virtual void RegisterObserver(IObserver<T> & observer) = 0;
+	virtual void RegisterObserver(IObserver<T>& observer) = 0;
 	virtual void NotifyObservers() = 0;
-	virtual void RemoveObserver(IObserver<T> & observer) = 0;
+	virtual void RemoveObserver(IObserver<T>& observer) = 0;
 };
 
 // Реализация интерфейса IObservable
@@ -38,7 +38,7 @@ class CObservable : public IObservable<T>
 public:
 	typedef IObserver<T> ObserverType;
 
-	void RegisterObserver(ObserverType & observer) override
+	void RegisterObserver(ObserverType& observer) override
 	{
 		m_observers.insert(&observer);
 	}
@@ -46,22 +46,59 @@ public:
 	void NotifyObservers() override
 	{
 		T data = GetChangedData();
-		for (auto & observer : m_observers)
+		auto observers = m_observers;
+		for (auto& observer : observers)
 		{
 			observer->Update(data);
 		}
 	}
 
-	void RemoveObserver(ObserverType & observer) override
+	void RemoveObserver(ObserverType& observer) override
 	{
 		m_observers.erase(&observer);
 	}
 
 protected:
-	// Классы-наследники должны перегрузить данный метод, 
+	// Классы-наследники должны перегрузить данный метод,
 	// в котором возвращать информацию об изменениях в объекте
-	virtual T GetChangedData()const = 0;
+	virtual T GetChangedData() const = 0;
 
 private:
-	std::set<ObserverType *> m_observers;
+	std::set<ObserverType*> m_observers;
+};
+
+template <typename T>
+struct ObserverRegistration
+{
+	using Observable = IObservable<T>;
+	using Observer = IObserver<T>;
+
+	ObserverRegistration(Observable& subject, Observer& observer)
+		: m_subject(subject)
+		, m_observer(observer)
+	{
+		m_subject.RegisterObserver(observer);
+	}
+
+	~ObserverRegistration()
+	{
+		CancelRegistration();
+	}
+
+	void CancelRegistration()
+	{
+		if (m_observerRegistered)
+		{
+			m_subject.RemoveObserver(m_observer);
+			m_observerRegistered = false;
+		}
+	}
+
+private:
+	ObserverRegistration(const ObserverRegistration&) = delete;
+	ObserverRegistration& operator=(const ObserverRegistration&) = delete;
+
+	Observable& m_subject;
+	Observer& m_observer;
+	bool m_observerRegistered = true;
 };

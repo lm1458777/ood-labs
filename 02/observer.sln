@@ -4,6 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1_WeatherStation", "WeatherStation\WeatherStation.vcxproj", "{FCDB7FE8-7A0C-43DC-B476-4AB6B6DF5933}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FCFEFD55-B48F-4697-8BAB-710BE9793A61} = {FCFEFD55-B48F-4697-8BAB-710BE9793A61}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tests", "tests\tests.vcxproj", "{FCFEFD55-B48F-4697-8BAB-710BE9793A61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +26,14 @@ Global
 		{FCDB7FE8-7A0C-43DC-B476-4AB6B6DF5933}.Release|x64.Build.0 = Release|x64
 		{FCDB7FE8-7A0C-43DC-B476-4AB6B6DF5933}.Release|x86.ActiveCfg = Release|Win32
 		{FCDB7FE8-7A0C-43DC-B476-4AB6B6DF5933}.Release|x86.Build.0 = Release|Win32
+		{FCFEFD55-B48F-4697-8BAB-710BE9793A61}.Debug|x64.ActiveCfg = Debug|x64
+		{FCFEFD55-B48F-4697-8BAB-710BE9793A61}.Debug|x64.Build.0 = Debug|x64
+		{FCFEFD55-B48F-4697-8BAB-710BE9793A61}.Debug|x86.ActiveCfg = Debug|Win32
+		{FCFEFD55-B48F-4697-8BAB-710BE9793A61}.Debug|x86.Build.0 = Debug|Win32
+		{FCFEFD55-B48F-4697-8BAB-710BE9793A61}.Release|x64.ActiveCfg = Release|x64
+		{FCFEFD55-B48F-4697-8BAB-710BE9793A61}.Release|x64.Build.0 = Release|x64
+		{FCFEFD55-B48F-4697-8BAB-710BE9793A61}.Release|x86.ActiveCfg = Release|Win32
+		{FCFEFD55-B48F-4697-8BAB-710BE9793A61}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
