@@ -26,5 +26,8 @@
     <ClInclude Include="Observer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ObserverWithPriority.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "../WeatherStation/Observer.h"
 
+using namespace observer;
+
 namespace
 {
 

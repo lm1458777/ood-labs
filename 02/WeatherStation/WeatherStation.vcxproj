@@ -151,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Observer.h" />
+    <ClInclude Include="ObserverWithPriority.h" />
     <ClInclude Include="WeatherData.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

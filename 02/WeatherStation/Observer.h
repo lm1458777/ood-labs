@@ -3,6 +3,9 @@
 #include <functional>
 #include <set>
 
+namespace observer
+{
+
 /*
 Шаблонный интерфейс IObserver. Его должен реализовывать класс, 
 желающий получать уведомления от соответствующего IObservable
@@ -102,3 +105,5 @@ private:
 	Observer& m_observer;
 	bool m_observerRegistered = true;
 };
+
+} // namespace observer

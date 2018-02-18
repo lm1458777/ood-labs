@@ -14,7 +14,7 @@ struct SWeatherInfo
 	double pressure = 0;
 };
 
-class CDisplay : public IObserver<SWeatherInfo>
+class CDisplay : public observer::IObserver<SWeatherInfo>
 {
 private:
 	/* Метод Update сделан приватным, чтобы ограничить возможность его вызова напрямую
@@ -77,7 +77,7 @@ private:
 	unsigned m_countAcc = 0;
 };
 
-class CStatsDisplay : public IObserver<SWeatherInfo>
+class CStatsDisplay : public observer::IObserver<SWeatherInfo>
 {
 private:
 	/* Метод Update сделан приватным, чтобы ограничить возможность его вызова напрямую
@@ -110,7 +110,7 @@ private:
 	StatsData m_pressure;
 };
 
-class CWeatherData : public CObservable<SWeatherInfo>
+class CWeatherData : public observer::CObservable<SWeatherInfo>
 {
 public:
 	// Температура в градусах Цельсия

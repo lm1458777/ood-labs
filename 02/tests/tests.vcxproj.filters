@@ -29,7 +29,10 @@
     <ClCompile Include="tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SafeObserverNotification.cpp">
+    <ClCompile Include="ObserverWithPriorityTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SafeObserverNotificationTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
