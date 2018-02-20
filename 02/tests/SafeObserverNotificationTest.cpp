@@ -70,15 +70,18 @@ SCENARIO("The observer can be deleted during the notification")
 				CHECK_EQ(obs2.newData, 42);
 				CHECK_EQ(obs3.newData, 42);
 
-				AND_THEN("one observer is removed and does not receive notifications anymore")
+				AND_WHEN("the subject notifies observers again")
 				{
 					subject.changedData = 43;
 					subject.NotifyObservers();
 
-					CHECK_EQ(obs1.newData, 43);
-					CHECK_EQ(obs3.newData, 43);
+					THEN("the removed observer does not receive notification")
+					{
+						CHECK_EQ(obs1.newData, 43);
+						CHECK_EQ(obs3.newData, 43);
 
-					CHECK_EQ(obs2.newData, 42);
+						CHECK_EQ(obs2.newData, 42);
+					}
 				}
 			}
 		}
