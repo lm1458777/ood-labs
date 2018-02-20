@@ -2,9 +2,16 @@
 
 #include <functional>
 #include <set>
+#include <nn.hpp>
 
 namespace observer
 {
+
+template <typename T>
+using not_null = dropbox::oxygen::nn<T>;
+
+template <typename T>
+class IObservable;
 
 /*
 Шаблонный интерфейс IObserver. Его должен реализовывать класс, 
@@ -16,7 +23,7 @@ template <typename T>
 class IObserver
 {
 public:
-	virtual void Update(T const& data) = 0;
+	virtual void Update(not_null<IObservable<T>*> subject, T const& data) = 0;
 	virtual ~IObserver() = default;
 };
 
@@ -32,6 +39,7 @@ public:
 	virtual void RegisterObserver(IObserver<T>& observer) = 0;
 	virtual void NotifyObservers() = 0;
 	virtual void RemoveObserver(IObserver<T>& observer) = 0;
+	virtual std::string GetLocation() const = 0;
 };
 
 // Реализация интерфейса IObservable
@@ -52,7 +60,7 @@ public:
 		auto observers = m_observers;
 		for (auto& observer : observers)
 		{
-			observer->Update(data);
+			observer->Update(NN_CHECK_ASSERT(this), data);
 		}
 	}
 

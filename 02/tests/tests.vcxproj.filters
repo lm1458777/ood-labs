@@ -35,5 +35,8 @@
     <ClCompile Include="SafeObserverNotificationTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StatsDisplayDuoTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <climits>
 #include <iostream>
+#include <unordered_map>
 #include <vector>
 
 using namespace std;
@@ -14,18 +15,27 @@ struct SWeatherInfo
 	double pressure = 0;
 };
 
-class CDisplay : public observer::IObserver<SWeatherInfo>
+using Observer = observer::IObserver<SWeatherInfo>;
+using Observable = observer::IObservable<SWeatherInfo>;
+using ObservableNotNull = observer::not_null<Observable*>;
+
+class CDisplay : public Observer
 {
 private:
 	/* Метод Update сделан приватным, чтобы ограничить возможность его вызова напрямую
 		Классу CObservable он будет доступен все равно, т.к. в интерфейсе IObserver он
 		остается публичным
 	*/
-	void Update(SWeatherInfo const& data) override
+	void Update(ObservableNotNull subject, SWeatherInfo const& data) override
 	{
-		std::cout << "Current Temp " << data.temperature << std::endl;
-		std::cout << "Current Hum " << data.humidity << std::endl;
-		std::cout << "Current Pressure " << data.pressure << std::endl;
+		std::cout
+			<< "[" << subject->GetLocation().c_str() << "]"
+			<< " Current:"
+			<< " Temp = " << data.temperature
+			<< "; Hum = " << data.humidity
+			<< "; Pressure = " << data.pressure
+			<< "." << std::endl;
+
 		std::cout << "----------------" << std::endl;
 	}
 };
@@ -77,26 +87,54 @@ private:
 	unsigned m_countAcc = 0;
 };
 
-class CStatsDisplay : public observer::IObserver<SWeatherInfo>
+class CStatsDisplay : public Observer
 {
+public:
+	struct SubjectStats
+	{
+		StatsData temperature;
+		StatsData humidity;
+		StatsData pressure;
+	};
+
+	SubjectStats GetStatistics(ObservableNotNull subject) const
+	{
+		auto it = m_stats.find(subject);
+		return it == m_stats.end() ? SubjectStats{} : it->second;
+	}
+
 private:
 	/* Метод Update сделан приватным, чтобы ограничить возможность его вызова напрямую
 	Классу CObservable он будет доступен все равно, т.к. в интерфейсе IObserver он
 	остается публичным
 	*/
-	void Update(SWeatherInfo const& data) override
+	void Update(ObservableNotNull subject, SWeatherInfo const& data) override
 	{
-		m_temperature.Accumulate(data.temperature);
-		m_humidity.Accumulate(data.humidity);
-		m_pressure.Accumulate(data.pressure);
+		auto& stats = m_stats[subject];
 
-		Display(std::cout, "Temp    ", m_temperature);
-		Display(std::cout, "Humidity", m_humidity);
-		Display(std::cout, "Pressure", m_pressure);
+		Accumulate(stats, data);
+
+		std::cout << "[" << subject->GetLocation().c_str() << "]" << std::endl;
+		Display(std::cout, stats);
 		std::cout << "----------------" << std::endl;
 	}
 
-	static void Display(std::ostream& out, const char* name, const StatsData& data)
+private:
+	static void Accumulate(SubjectStats& stats, const SWeatherInfo& newData)
+	{
+		stats.temperature.Accumulate(newData.temperature);
+		stats.humidity.Accumulate(newData.humidity);
+		stats.pressure.Accumulate(newData.pressure);
+	}
+
+	static void Display(std::ostream& out, const SubjectStats& stats)
+	{
+		DisplayParameter(out, "Temp    ", stats.temperature);
+		DisplayParameter(out, "Humidity", stats.humidity);
+		DisplayParameter(out, "Pressure", stats.pressure);
+	}
+
+	static void DisplayParameter(std::ostream& out, const char* name, const StatsData& data)
 	{
 		out << name << ": "
 			<< "Average = " << data.GetAverageValue()
@@ -105,14 +143,17 @@ private:
 			<< "." << std::endl;
 	}
 
-	StatsData m_temperature;
-	StatsData m_humidity;
-	StatsData m_pressure;
+	std::unordered_map<ObservableNotNull, SubjectStats> m_stats;
 };
 
 class CWeatherData : public observer::CObservable<SWeatherInfo>
 {
 public:
+	CWeatherData(std::string location)
+		: m_location{ std::move(location) }
+	{
+	}
+
 	// Температура в градусах Цельсия
 	double GetTemperature() const
 	{
@@ -143,6 +184,11 @@ public:
 		MeasurementsChanged();
 	}
 
+	std::string GetLocation() const override
+	{
+		return m_location;
+	}
+
 protected:
 	SWeatherInfo GetChangedData() const override
 	{
@@ -157,4 +203,6 @@ private:
 	double m_temperature = 0.0;
 	double m_humidity = 0.0;
 	double m_pressure = 760.0;
+
+	std::string m_location;
 };
