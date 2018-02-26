@@ -13,12 +13,13 @@ int main()
 	CStatsDisplay statsDisplay;
 	wd.RegisterObserver(statsDisplay);
 
-	wd.SetMeasurements(3, 0.7, 760, Wind{ 3, M_PI });
-	wd.SetMeasurements(4, 0.8, 761, Wind{ 4, -M_PI_2 });
+	wd.SetMeasurements(3, 0.7, 760, Wind::FromSpeedAndDegrees(3, 180));
+	wd.SetMeasurements(4, 0.8, 761, Wind::FromSpeedAndDegrees(4, -90));
 
 	wd.RemoveObserver(statsDisplay);
 
-	wd.SetMeasurements(10, 0.8, 761, Wind{ 6, 0 });
-	wd.SetMeasurements(-10, 0.8, 761, Wind{ 8, -M_PI });
+	wd.SetMeasurements(10, 0.8, 761, Wind::FromSpeedAndDegrees(6, 0));
+	wd.SetMeasurements(-10, 0.8, 761, Wind::FromSpeedAndDegrees(8, -180));
+
 	return 0;
 }

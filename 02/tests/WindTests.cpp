@@ -8,8 +8,8 @@ using doctest::Approx;
 
 static void ExpectEqual(Wind a, Wind b)
 {
-	CHECK(a.speed == Approx(b.speed));
-	CHECK(a.direction == Approx(b.direction));
+	CHECK(a.GetSpeed() == Approx(b.GetSpeed()));
+	CHECK(a.GetDirection() == Approx(b.GetDirection()));
 }
 
 TEST_CASE("the function DegreesToRadians returns normalized value in radians")
@@ -72,7 +72,7 @@ SCENARIO("The WindStatsData accumulates wind data")
 			{
 				ExpectEqual(
 					stats.GetAverageWind(),
-					Wind{ measurement.speed, NormalizeRadians(measurement.direction) });
+					Wind{ measurement.GetSpeed(), measurement.GetDirection() });
 			}
 		}
 

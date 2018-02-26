@@ -1,26 +1,43 @@
 #pragma once
 #include <limits>
 
-double NormalizeRadians(double rad);
-
 double DegreesToRadians(double deg);
 double RadiansToDegrees(double rad);
 
-struct Wind
+class Wind
 {
+public:
 	using Speed = double;
 	using Radians = double;
-
-	Speed speed = 0;
-	Radians direction = 0;
+	using Degrees = double;
 
 	Wind() = default;
 
-	Wind(Speed spd, Radians dir)
-		: speed(spd)
-		, direction(dir)
+	Wind(Speed spd, Radians dir);
+
+	static Wind FromSpeedAndDegrees(Speed speed, Degrees direction)
 	{
+		return Wind{ speed, DegreesToRadians(direction) };
 	}
+
+	Speed GetSpeed() const
+	{
+		return m_speed;
+	}
+
+	Radians GetDirection() const
+	{
+		return m_direction;
+	}
+
+	Degrees GetDirectionInDegrees() const
+	{
+		return RadiansToDegrees(m_direction);
+	}
+
+private:
+	Speed m_speed = 0;
+	Radians m_direction = 0;
 };
 
 Wind operator+(Wind a, Wind b);

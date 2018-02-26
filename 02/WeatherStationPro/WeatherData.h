@@ -29,8 +29,8 @@ private:
 		std::cout << "Current Temp " << data.temperature << std::endl;
 		std::cout << "Current Hum " << data.humidity << std::endl;
 		std::cout << "Current Pressure " << data.pressure << std::endl;
-		std::cout << "Current Wind: speed =  " << data.wind.speed
-			<< ", direction = " << RadiansToDegrees(data.wind.direction) << "deg" << std::endl;
+		std::cout << "Current Wind: speed =  " << data.wind.GetSpeed()
+			<< ", direction = " << data.wind.GetDirectionInDegrees() << "deg" << std::endl;
 		std::cout << "----------------" << std::endl;
 	}
 };
@@ -69,8 +69,8 @@ private:
 	{
 		const auto averageWind = data.GetAverageWind();
 		out << "Wind    " << ": "
-			<< "Average = (speed: " << averageWind.speed
-			<< ", direction: " << RadiansToDegrees(averageWind.direction) << "deg)"
+			<< "Average = (speed: " << averageWind.GetSpeed()
+			<< ", direction: " << averageWind.GetDirectionInDegrees() << "deg)"
 			<< "; Min speed = " << data.GetMinSpeed()
 			<< "; Max speed = " << data.GetMaxSpeed()
 			<< "." << std::endl;

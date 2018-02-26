@@ -14,6 +14,11 @@ double NormalizeAngle(double angle, double maxAngle)
 	return (angle < 0) ? maxAngle + angle : angle;
 }
 
+double NormalizeRadians(double rad)
+{
+	return NormalizeAngle(rad, 2 * M_PI);
+}
+
 bool NearlyEqual(double a, double b)
 {
 	return std::abs(a - b) <= 0.0001;
@@ -26,11 +31,6 @@ bool NearlyEqualZero(double d)
 
 } // namespace
 
-double NormalizeRadians(double rad)
-{
-	return NormalizeAngle(rad, 2 * M_PI);
-}
-
 double DegreesToRadians(double deg)
 {
 	return NormalizeAngle(deg, 360) * M_PI / 180.0;
@@ -41,13 +41,19 @@ double RadiansToDegrees(double rad)
 	return NormalizeRadians(rad) * 180 / M_PI;
 }
 
+Wind::Wind(Speed spd, Radians dir)
+	: m_speed(spd)
+	, m_direction(NormalizeRadians(dir))
+{
+}
+
 Wind operator+(Wind a, Wind b)
 {
-	auto aX = a.speed * cos(a.direction);
-	auto aY = a.speed * sin(a.direction);
+	auto aX = a.GetSpeed() * cos(a.GetDirection());
+	auto aY = a.GetSpeed() * sin(a.GetDirection());
 
-	auto bX = b.speed * cos(b.direction);
-	auto bY = b.speed * sin(b.direction);
+	auto bX = b.GetSpeed() * cos(b.GetDirection());
+	auto bY = b.GetSpeed() * sin(b.GetDirection());
 
 	auto cX = aX + bX;
 	auto cY = aY + bY;
@@ -68,7 +74,7 @@ Wind operator+(Wind a, Wind b)
 		return Wind{ abs(cX), cX < 0 ? M_PI : 0 };
 	}
 
-	return Wind{ len, NormalizeRadians(atan2(cY, cX)) };
+	return Wind{ len, atan2(cY, cX) };
 }
 
 void WindStatsData::Accumulate(Wind newValue)
@@ -78,9 +84,9 @@ void WindStatsData::Accumulate(Wind newValue)
 		throw std::runtime_error("Too many data");
 	}
 
-	m_min = std::min(m_min, newValue.speed);
+	m_min = std::min(m_min, newValue.GetSpeed());
 
-	m_max = std::max(m_max, newValue.speed);
+	m_max = std::max(m_max, newValue.GetSpeed());
 
 	m_acc = m_acc + newValue;
 	++m_countAcc;
@@ -100,7 +106,7 @@ Wind WindStatsData::GetAverageWind() const
 {
 	return !HasData()
 		? Wind{}
-		: Wind{ m_acc.speed / m_countAcc, m_acc.direction };
+		: Wind{ m_acc.GetSpeed() / m_countAcc, m_acc.GetDirection() };
 }
 
 bool WindStatsData::HasData() const
