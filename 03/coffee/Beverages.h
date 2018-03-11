@@ -6,14 +6,16 @@
 class CBeverage : public IBeverage
 {
 public:
-	CBeverage(const std::string & description)
-		:m_description(description)
-	{}
+	CBeverage(const std::string& description)
+		: m_description(description)
+	{
+	}
 
-	std::string GetDescription()const override final
+	std::string GetDescription() const final
 	{
 		return m_description;
 	}
+
 private:
 	std::string m_description;
 };
@@ -22,27 +24,59 @@ private:
 class CCoffee : public CBeverage
 {
 public:
-	CCoffee(const std::string& description = "Coffee")
-		:CBeverage(description) 
-	{}
-
-	double GetCost() const override 
+	static std::string GetName()
 	{
-		return 60; 
+		return "Coffee";
+	}
+
+	CCoffee(const std::string& description = GetName())
+		: CBeverage(description)
+	{
+	}
+
+	double GetCost() const override
+	{
+		return 60;
 	}
 };
 
 // Капуччино
-class CCapuccino : public CCoffee
+class CCappuccino : public CCoffee
 {
 public:
-	CCapuccino() 
-		:CCoffee("Capuccino") 
-	{}
-
-	double GetCost() const override 
+	static std::string GetName()
 	{
-		return 80; 
+		return "Cappuccino";
+	}
+
+	CCappuccino(const std::string& description = GetName())
+		: CCoffee(description)
+	{
+	}
+
+	double GetCost() const override
+	{
+		return 80;
+	}
+};
+
+// Двойная порция Капуччино
+class CDoubleCappuccino : public CCappuccino
+{
+public:
+	static std::string GetName()
+	{
+		return "Double Cappuccino";
+	}
+
+	CDoubleCappuccino()
+		: CCappuccino(GetName())
+	{
+	}
+
+	double GetCost() const override
+	{
+		return 120;
 	}
 };
 
@@ -50,13 +84,39 @@ public:
 class CLatte : public CCoffee
 {
 public:
-	CLatte() 
-		:CCoffee("Latte") 
-	{}
-
-	double GetCost() const override 
+	static std::string GetName()
 	{
-		return 90; 
+		return "Latte";
+	}
+
+	CLatte(const std::string& description = GetName())
+		: CCoffee(description)
+	{
+	}
+
+	double GetCost() const override
+	{
+		return 90;
+	}
+};
+
+// Двойная порция Латте
+class CDoubleLatte : public CLatte
+{
+public:
+	static std::string GetName()
+	{
+		return "Double Latte";
+	}
+
+	CDoubleLatte()
+		: CLatte(GetName())
+	{
+	}
+
+	double GetCost() const override
+	{
+		return 130;
 	}
 };
 
@@ -64,13 +124,19 @@ public:
 class CTea : public CBeverage
 {
 public:
-	CTea() 
-		:CBeverage("Tea") 
-	{}
-
-	double GetCost() const override 
+	static std::string GetName()
 	{
-		return 30; 
+		return "Tea";
+	}
+
+	CTea()
+		: CBeverage(GetName())
+	{
+	}
+
+	double GetCost() const override
+	{
+		return 30;
 	}
 };
 
@@ -78,12 +144,13 @@ public:
 class CMilkshake : public CBeverage
 {
 public:
-	CMilkshake() 
-		:CBeverage("Milkshake") 
-	{}
+	CMilkshake()
+		: CBeverage("Milkshake")
+	{
+	}
 
-	double GetCost() const override 
-	{ 
-		return 80; 
+	double GetCost() const override
+	{
+		return 80;
 	}
 };
