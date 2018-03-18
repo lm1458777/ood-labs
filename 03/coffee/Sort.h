@@ -6,7 +6,7 @@ class Sort : public IBeverage
 public:
 	Sort(IBeveragePtr beverage, std::string sort)
 		: m_beverage(std::move(beverage))
-		, m_sort(sort)
+		, m_sort(std::move(sort))
 	{
 		if (!m_beverage)
 		{

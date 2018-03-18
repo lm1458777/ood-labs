@@ -3,6 +3,7 @@
 #include "Portion.h"
 #include "Sort.h"
 
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -116,6 +117,9 @@ void PrintMenuItem(int choice, const string& name)
 	cout << "[" << choice << "] - " << name.c_str() << "\n";
 }
 
+constexpr auto ChoiceQuit = -1;
+constexpr auto ChoiceCheckout = 0;
+
 enum class BeverageChoice
 {
 	Coffee = 1,
@@ -205,11 +209,10 @@ BeverageChoice SelectBeverage()
 
 enum class CondimentChoice
 {
-	Quit = -1,
-	Checkout = 0,
 	Lemon = 1,
 	Cinnamon,
 	Cream,
+	Chocolate,
 	Liquor,
 };
 
@@ -224,39 +227,45 @@ CondimentChoice SelectCondiment()
 	PrintCondimentMenuItem(CondimentChoice::Lemon, "Lemon");
 	PrintCondimentMenuItem(CondimentChoice::Cinnamon, "Cinnamon");
 	PrintCondimentMenuItem(CondimentChoice::Cream, "Cream");
+	PrintCondimentMenuItem(CondimentChoice::Chocolate, "Chocolate");
 	PrintCondimentMenuItem(CondimentChoice::Liquor, "Liquor");
-	PrintCondimentMenuItem(CondimentChoice::Checkout, "Checkout");
+	PrintCondimentMenuItem(static_cast<CondimentChoice>(ChoiceCheckout), "Checkout");
 
-	auto condimentChoice = static_cast<int>(CondimentChoice::Quit);
+	auto condimentChoice = ChoiceQuit;
 	cin >> condimentChoice;
 
 	return static_cast<CondimentChoice>(condimentChoice);
 }
 
-constexpr LiquorType LiquorTypeQuit = static_cast<LiquorType>(-1);
-constexpr LiquorType LiquorTypeCheckout = static_cast<LiquorType>(0);
-
-LiquorType SelectLiquor()
+LiquorType SelectLiquorType()
 {
 	cout << "Select liquor:\n";
 	PrintMenuItem(static_cast<int>(LiquorType::Nut), "Nut");
 	PrintMenuItem(static_cast<int>(LiquorType::Chocolate), "Chocolate");
 
-	auto liquorChoice = static_cast<int>(LiquorTypeQuit);
+	auto liquorChoice = ChoiceQuit;
 	cin >> liquorChoice;
 
 	return static_cast<LiquorType>(liquorChoice);
 }
 
+int SelectChocolateQuantity()
+{
+	cout << "Select chocolate quantity [1..5]:\n";
+	auto quantity = ChoiceQuit;
+	cin >> quantity;
+	return quantity > 0 ? std::min(quantity, 5) : quantity;
+}
+
 IBeveragePtr AddCondiment(IBeveragePtr beverage)
 {
-	CondimentChoice condimentChoice = CondimentChoice::Quit;
+	auto condimentChoice = static_cast<CondimentChoice>(ChoiceQuit);
 	for (;;)
 	{
 		cout << "\n";
 		condimentChoice = SelectCondiment();
 
-		if (condimentChoice == CondimentChoice::Checkout)
+		if (static_cast<int>(condimentChoice) == ChoiceCheckout)
 		{
 			return beverage;
 		}
@@ -273,18 +282,31 @@ IBeveragePtr AddCondiment(IBeveragePtr beverage)
 		{
 			beverage = move(beverage) << MakeCondiment<Cream>();
 		}
-		else if (condimentChoice == CondimentChoice::Liquor)
+		else if (condimentChoice == CondimentChoice::Chocolate)
 		{
-			auto liquor = SelectLiquor();
-			if (liquor == LiquorTypeCheckout)
+			auto quantity = SelectChocolateQuantity();
+			if (quantity == ChoiceCheckout)
 			{
 				return beverage;
 			}
-			if (liquor == LiquorTypeQuit)
+			if (quantity == ChoiceQuit)
 			{
 				return nullptr;
 			}
-			beverage = move(beverage) << MakeCondiment<Liquor>(liquor);
+			beverage = move(beverage) << MakeCondiment<Chocolate>(quantity);
+		}
+		else if (condimentChoice == CondimentChoice::Liquor)
+		{
+			auto liquorType = SelectLiquorType();
+			if (static_cast<int>(liquorType) == ChoiceCheckout)
+			{
+				return beverage;
+			}
+			if (static_cast<int>(liquorType) == ChoiceQuit)
+			{
+				return nullptr;
+			}
+			beverage = move(beverage) << MakeCondiment<Liquor>(liquorType);
 		}
 		else
 		{
