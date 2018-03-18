@@ -11,7 +11,7 @@ public:
 	{
 	}
 
-	std::string GetDescription() const final
+	std::string GetDescription() const override
 	{
 		return m_description;
 	}
@@ -60,26 +60,6 @@ public:
 	}
 };
 
-// Двойная порция Капуччино
-class CDoubleCappuccino : public CCappuccino
-{
-public:
-	static std::string GetName()
-	{
-		return "Double Cappuccino";
-	}
-
-	CDoubleCappuccino()
-		: CCappuccino(GetName())
-	{
-	}
-
-	double GetCost() const override
-	{
-		return 120;
-	}
-};
-
 // Латте
 class CLatte : public CCoffee
 {
@@ -97,26 +77,6 @@ public:
 	double GetCost() const override
 	{
 		return 90;
-	}
-};
-
-// Двойная порция Латте
-class CDoubleLatte : public CLatte
-{
-public:
-	static std::string GetName()
-	{
-		return "Double Latte";
-	}
-
-	CDoubleLatte()
-		: CLatte(GetName())
-	{
-	}
-
-	double GetCost() const override
-	{
-		return 130;
 	}
 };
 
@@ -144,8 +104,13 @@ public:
 class CMilkshake : public CBeverage
 {
 public:
+	static std::string GetName()
+	{
+		return "Milkshake";
+	}
+
 	CMilkshake()
-		: CBeverage("Milkshake")
+		: CBeverage(GetName())
 	{
 	}
 

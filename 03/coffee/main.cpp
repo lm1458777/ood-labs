@@ -1,5 +1,7 @@
 ﻿#include "Beverages.h"
 #include "Condiments.h"
+#include "Portion.h"
+#include "Sort.h"
 
 #include <functional>
 #include <iostream>
@@ -116,7 +118,13 @@ enum class BeverageChoice
 	DoubleLatte,
 	Cappuccino,
 	DoubleCappuccino,
-	Tea,
+	BlackTea,
+	GreenTea,
+	RedTea,
+	ChifirTea,
+	SmallMilkshake,
+	MiddleMilkshake,
+	BigMilkshake,
 };
 
 unique_ptr<IBeverage> CreateBeverage(BeverageChoice beverageChoice)
@@ -130,16 +138,34 @@ unique_ptr<IBeverage> CreateBeverage(BeverageChoice beverageChoice)
 		return make_unique<CLatte>();
 
 	case BeverageChoice::DoubleLatte:
-		return make_unique<CDoubleLatte>();
+		return make_unique<Portion>(make_unique<CLatte>(), "Double", 130.0);
 
 	case BeverageChoice::Cappuccino:
 		return make_unique<CCappuccino>();
 
 	case BeverageChoice::DoubleCappuccino:
-		return make_unique<CDoubleCappuccino>();
+		return make_unique<Portion>(make_unique<CCappuccino>(), "Double", 120.0);
 
-	case BeverageChoice::Tea:
-		return make_unique<CTea>();
+	case BeverageChoice::BlackTea:
+		return make_unique<Sort>(make_unique<CTea>(), "Black");
+
+	case BeverageChoice::GreenTea:
+		return make_unique<Sort>(make_unique<CTea>(), "Green");
+
+	case BeverageChoice::RedTea:
+		return make_unique<Sort>(make_unique<CTea>(), "Red");
+
+	case BeverageChoice::ChifirTea:
+		return make_unique<Sort>(make_unique<CTea>(), "Chifir");
+
+	case BeverageChoice::SmallMilkshake:
+		return make_unique<Portion>(make_unique<CMilkshake>(), "Small", 50.0);
+
+	case BeverageChoice::MiddleMilkshake:
+		return make_unique<Portion>(make_unique<CMilkshake>(), "Middle", 60.0);
+
+	case BeverageChoice::BigMilkshake:
+		return make_unique<Portion>(make_unique<CMilkshake>(), "Big", 80.0);
 	}
 
 	return nullptr;
@@ -154,10 +180,16 @@ void DialogWithUser()
 	cout << "Select beverage:\n";
 	printMenuItem(BeverageChoice::Coffee, CCoffee::GetName());
 	printMenuItem(BeverageChoice::Latte, CLatte::GetName());
-	printMenuItem(BeverageChoice::DoubleLatte, CDoubleLatte::GetName());
+	printMenuItem(BeverageChoice::DoubleLatte, "Double " + CLatte::GetName());
 	printMenuItem(BeverageChoice::Cappuccino, CCappuccino::GetName());
-	printMenuItem(BeverageChoice::DoubleCappuccino, CDoubleCappuccino::GetName());
-	printMenuItem(BeverageChoice::Tea, CTea::GetName());
+	printMenuItem(BeverageChoice::DoubleCappuccino, "Double " + CCappuccino::GetName());
+	printMenuItem(BeverageChoice::BlackTea, "Black " + CTea::GetName());
+	printMenuItem(BeverageChoice::GreenTea, "Green " + CTea::GetName());
+	printMenuItem(BeverageChoice::RedTea, "Red " + CTea::GetName());
+	printMenuItem(BeverageChoice::ChifirTea, "Chifir " + CTea::GetName());
+	printMenuItem(BeverageChoice::SmallMilkshake, "Small " + CMilkshake::GetName());
+	printMenuItem(BeverageChoice::MiddleMilkshake, "Middle " + CMilkshake::GetName());
+	printMenuItem(BeverageChoice::BigMilkshake, "Big " + CMilkshake::GetName());
 
 	int beverageChoice = 0;
 	cin >> beverageChoice;
