@@ -192,3 +192,23 @@ protected:
 private:
 	unsigned m_mass;
 };
+
+class Cream final : public CCondimentDecorator
+{
+public:
+	Cream(IBeveragePtr beverage)
+		: CCondimentDecorator(std::move(beverage))
+	{
+	}
+
+protected:
+	double GetCondimentCost() const override
+	{
+		return 25;
+	}
+
+	std::string GetCondimentDescription() const override
+	{
+		return "Cream";
+	}
+};

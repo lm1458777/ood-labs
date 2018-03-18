@@ -111,6 +111,11 @@ auto operator<<(Component&& component, const Decorator& decorate)
 	return decorate(forward<Component>(component));
 }
 
+void PrintMenuItem(int choice, const string& name)
+{
+	cout << "[" << choice << "] - " << name.c_str() << "\n";
+}
+
 enum class BeverageChoice
 {
 	Coffee = 1,
@@ -127,7 +132,7 @@ enum class BeverageChoice
 	BigMilkshake,
 };
 
-unique_ptr<IBeverage> CreateBeverage(BeverageChoice beverageChoice)
+IBeveragePtr CreateBeverage(BeverageChoice beverageChoice)
 {
 	switch (beverageChoice)
 	{
@@ -171,62 +176,107 @@ unique_ptr<IBeverage> CreateBeverage(BeverageChoice beverageChoice)
 	return nullptr;
 }
 
-void DialogWithUser()
+void PrintBeverageMenuItem(BeverageChoice choice, const string& name)
 {
-	auto printMenuItem = [& out = cout](BeverageChoice choice, const string& name) {
-		out << "[" << static_cast<int>(choice) << "] - " << name.c_str() << "\n";
-	};
+	PrintMenuItem(static_cast<int>(choice), name);
+}
 
+BeverageChoice SelectBeverage()
+{
 	cout << "Select beverage:\n";
-	printMenuItem(BeverageChoice::Coffee, CCoffee::GetName());
-	printMenuItem(BeverageChoice::Latte, CLatte::GetName());
-	printMenuItem(BeverageChoice::DoubleLatte, "Double " + CLatte::GetName());
-	printMenuItem(BeverageChoice::Cappuccino, CCappuccino::GetName());
-	printMenuItem(BeverageChoice::DoubleCappuccino, "Double " + CCappuccino::GetName());
-	printMenuItem(BeverageChoice::BlackTea, "Black " + CTea::GetName());
-	printMenuItem(BeverageChoice::GreenTea, "Green " + CTea::GetName());
-	printMenuItem(BeverageChoice::RedTea, "Red " + CTea::GetName());
-	printMenuItem(BeverageChoice::ChifirTea, "Chifir " + CTea::GetName());
-	printMenuItem(BeverageChoice::SmallMilkshake, "Small " + CMilkshake::GetName());
-	printMenuItem(BeverageChoice::MiddleMilkshake, "Middle " + CMilkshake::GetName());
-	printMenuItem(BeverageChoice::BigMilkshake, "Big " + CMilkshake::GetName());
+	PrintBeverageMenuItem(BeverageChoice::Coffee, CCoffee::GetName());
+	PrintBeverageMenuItem(BeverageChoice::Latte, CLatte::GetName());
+	PrintBeverageMenuItem(BeverageChoice::DoubleLatte, "Double " + CLatte::GetName());
+	PrintBeverageMenuItem(BeverageChoice::Cappuccino, CCappuccino::GetName());
+	PrintBeverageMenuItem(BeverageChoice::DoubleCappuccino, "Double " + CCappuccino::GetName());
+	PrintBeverageMenuItem(BeverageChoice::BlackTea, "Black " + CTea::GetName());
+	PrintBeverageMenuItem(BeverageChoice::GreenTea, "Green " + CTea::GetName());
+	PrintBeverageMenuItem(BeverageChoice::RedTea, "Red " + CTea::GetName());
+	PrintBeverageMenuItem(BeverageChoice::ChifirTea, "Chifir " + CTea::GetName());
+	PrintBeverageMenuItem(BeverageChoice::SmallMilkshake, "Small " + CMilkshake::GetName());
+	PrintBeverageMenuItem(BeverageChoice::MiddleMilkshake, "Middle " + CMilkshake::GetName());
+	PrintBeverageMenuItem(BeverageChoice::BigMilkshake, "Big " + CMilkshake::GetName());
 
 	int beverageChoice = 0;
 	cin >> beverageChoice;
 
-	auto beverage = CreateBeverage(static_cast<BeverageChoice>(beverageChoice));
-	if (!beverage)
-	{
-		return;
-	}
+	return static_cast<BeverageChoice>(beverageChoice);
+}
 
-	int condimentChoice;
+enum class CondimentChoice
+{
+	Quit = -1,
+	Checkout = 0,
+	Lemon = 1,
+	Cinnamon,
+	Cream,
+};
+
+void PrintCondimentMenuItem(CondimentChoice choice, const string& name)
+{
+	PrintMenuItem(static_cast<int>(choice), name);
+}
+
+CondimentChoice SelectCondiment()
+{
+	cout << "Select beverage:\n";
+	PrintCondimentMenuItem(CondimentChoice::Lemon, "Lemon");
+	PrintCondimentMenuItem(CondimentChoice::Cinnamon, "Cinnamon");
+	PrintCondimentMenuItem(CondimentChoice::Cream, "Cream");
+	PrintCondimentMenuItem(CondimentChoice::Checkout, "Checkout");
+
+	int condimentChoice = static_cast<int>(CondimentChoice::Quit);
+	cin >> condimentChoice;
+
+	return static_cast<CondimentChoice>(condimentChoice);
+}
+
+IBeveragePtr AddCondiment(IBeveragePtr beverage)
+{
+	CondimentChoice condimentChoice = CondimentChoice::Quit;
 	for (;;)
 	{
-		cout << "1 - Lemon, 2 - Cinnamon, 0 - Checkout" << endl;
-		cin >> condimentChoice;
+		cout << "\n";
+		condimentChoice = SelectCondiment();
 
-		if (condimentChoice == 1)
+		if (condimentChoice == CondimentChoice::Checkout)
+		{
+			return beverage;
+		}
+
+		if (condimentChoice == CondimentChoice::Lemon)
 		{
 			//beverage = make_unique<CLemon>(move(beverage));
 			beverage = move(beverage) << MakeCondiment<CLemon>(2);
 		}
-		else if (condimentChoice == 2)
+		else if (condimentChoice == CondimentChoice::Cinnamon)
 		{
 			//beverage = make_unique<CCinnamon>(move(beverage));
 			beverage = move(beverage) << MakeCondiment<CCinnamon>();
 		}
-		else if (condimentChoice == 0)
+		else if (condimentChoice == CondimentChoice::Cream)
 		{
-			break;
+			beverage = move(beverage) << MakeCondiment<Cream>();
 		}
 		else
 		{
-			return;
+			return nullptr;
 		}
 	}
+}
 
-	cout << beverage->GetDescription() << ", cost: " << beverage->GetCost() << endl;
+void DialogWithUser()
+{
+	auto beverage = CreateBeverage(SelectBeverage());
+	if (beverage)
+	{
+		beverage = AddCondiment(move(beverage));
+		if (beverage)
+		{
+			cout << "\n";
+			cout << beverage->GetDescription() << ", cost: " << beverage->GetCost() << endl;
+		}
+	}
 }
 
 int main()
