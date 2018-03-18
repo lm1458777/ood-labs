@@ -212,3 +212,34 @@ protected:
 		return "Cream";
 	}
 };
+
+enum class LiquorType
+{
+	Nut = 1,
+	Chocolate = 2,
+};
+
+class Liquor final : public CCondimentDecorator
+{
+public:
+	Liquor(IBeveragePtr beverage, LiquorType liquorType)
+		: CCondimentDecorator(std::move(beverage))
+		, m_liquorType(liquorType)
+	{
+	}
+
+protected:
+	std::string GetCondimentDescription() const override
+	{
+		return std::string(m_liquorType == LiquorType::Nut ? "Nut" : "Chocolate")
+			+ " liquor";
+	}
+
+	double GetCondimentCost() const override
+	{
+		return 50;
+	}
+
+private:
+	LiquorType m_liquorType = LiquorType::Nut;
+};

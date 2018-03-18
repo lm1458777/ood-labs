@@ -210,6 +210,7 @@ enum class CondimentChoice
 	Lemon = 1,
 	Cinnamon,
 	Cream,
+	Liquor,
 };
 
 void PrintCondimentMenuItem(CondimentChoice choice, const string& name)
@@ -223,12 +224,28 @@ CondimentChoice SelectCondiment()
 	PrintCondimentMenuItem(CondimentChoice::Lemon, "Lemon");
 	PrintCondimentMenuItem(CondimentChoice::Cinnamon, "Cinnamon");
 	PrintCondimentMenuItem(CondimentChoice::Cream, "Cream");
+	PrintCondimentMenuItem(CondimentChoice::Liquor, "Liquor");
 	PrintCondimentMenuItem(CondimentChoice::Checkout, "Checkout");
 
-	int condimentChoice = static_cast<int>(CondimentChoice::Quit);
+	auto condimentChoice = static_cast<int>(CondimentChoice::Quit);
 	cin >> condimentChoice;
 
 	return static_cast<CondimentChoice>(condimentChoice);
+}
+
+constexpr LiquorType LiquorTypeQuit = static_cast<LiquorType>(-1);
+constexpr LiquorType LiquorTypeCheckout = static_cast<LiquorType>(0);
+
+LiquorType SelectLiquor()
+{
+	cout << "Select liquor:\n";
+	PrintMenuItem(static_cast<int>(LiquorType::Nut), "Nut");
+	PrintMenuItem(static_cast<int>(LiquorType::Chocolate), "Chocolate");
+
+	auto liquorChoice = static_cast<int>(LiquorTypeQuit);
+	cin >> liquorChoice;
+
+	return static_cast<LiquorType>(liquorChoice);
 }
 
 IBeveragePtr AddCondiment(IBeveragePtr beverage)
@@ -246,17 +263,28 @@ IBeveragePtr AddCondiment(IBeveragePtr beverage)
 
 		if (condimentChoice == CondimentChoice::Lemon)
 		{
-			//beverage = make_unique<CLemon>(move(beverage));
 			beverage = move(beverage) << MakeCondiment<CLemon>(2);
 		}
 		else if (condimentChoice == CondimentChoice::Cinnamon)
 		{
-			//beverage = make_unique<CCinnamon>(move(beverage));
 			beverage = move(beverage) << MakeCondiment<CCinnamon>();
 		}
 		else if (condimentChoice == CondimentChoice::Cream)
 		{
 			beverage = move(beverage) << MakeCondiment<Cream>();
+		}
+		else if (condimentChoice == CondimentChoice::Liquor)
+		{
+			auto liquor = SelectLiquor();
+			if (liquor == LiquorTypeCheckout)
+			{
+				return beverage;
+			}
+			if (liquor == LiquorTypeQuit)
+			{
+				return nullptr;
+			}
+			beverage = move(beverage) << MakeCondiment<Liquor>(liquor);
 		}
 		else
 		{
