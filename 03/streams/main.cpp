@@ -1,46 +1,24 @@
-﻿#include <iostream>
-#include <string>
-#include <cstdint>
+﻿#include "../libstreams/FileInputStream.h"
+#include "../libstreams/FileOutputStream.h"
 
 using namespace std;
 
-class IOutputDataStream
-{
-public:
-	// Записывает в поток данных байт
-	// Выбрасывает исключение std::ios_base::failure в случае ошибки
-	virtual void WriteByte(uint8_t data) = 0;
-
-	// Записывает в поток блок данных размером size байт, 
-	// располагающийся по адресу srcData,
-	// В случае ошибки выбрасывает исключение std::ios_base::failure
-	virtual void WriteBlock(const void * srcData, std::streamsize size) = 0;
-
-	virtual ~IOutputDataStream() = default;
-};
-
-class IInputDataStream
-{
-public:
-	// Возвращает признак достижения конца данных потока
-	// Выбрасывает исключение std::ios_base::failuer в случае ошибки
-	virtual bool IsEOF()const = 0;
-
-	// Считывает байт из потока. 
-	// Выбрасывает исключение std::ios_base::failure в случае ошибки
-	virtual uint8_t ReadByte() = 0;
-
-	// Считывает из потока блок данных размером size байт, записывая его в память
-	// по адресу dstBuffer
-	// Возвращает количество реально прочитанных байт. Выбрасывает исключение в случае ошибки
-	virtual std::streamsize ReadBlock(void * dstBuffer, std::streamsize size) = 0;
-
-	virtual ~IInputDataStream() = default;
-};
-
-
 int main()
 {
-	
+	FileInputStream in(R"(D:\maxim\projects\ood-labs\03\libstreams_tests\test_data\15-byte)");
+	FileOutputStream out(R"(D:\maxim\projects\ood-labs\03\libstreams_tests\test_data\15-byte-copy)");
+
+	constexpr auto BufSize = 128;
+	uint8_t buf[BufSize];
+
+	while (!in.IsEOF())
+	{
+		auto n = in.ReadBlock(buf, BufSize);
+		if (n > 0)
+		{
+			out.WriteBlock(buf, n);
+		}
+	}
+
 	return 0;
 }

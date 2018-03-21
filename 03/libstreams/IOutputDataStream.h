@@ -1,4 +1,6 @@
 #pragma once
+#include <iosfwd>
+#include <stdint.h>
 
 class IOutputDataStream
 {
