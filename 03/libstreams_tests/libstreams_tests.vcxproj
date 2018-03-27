@@ -151,6 +151,9 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Cypher_tests.cpp" />
+    <ClCompile Include="Decoder_tests.cpp" />
+    <ClCompile Include="Encoder_tests.cpp" />
     <ClCompile Include="FileOutputStream_tests.cpp" />
     <ClCompile Include="libstreams_tests.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>

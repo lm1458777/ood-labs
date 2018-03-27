@@ -20,3 +20,5 @@ public:
 	// Возвращает количество реально прочитанных байт. Выбрасывает исключение в случае ошибки
 	virtual std::streamsize ReadBlock(void* dstBuffer, std::streamsize size) = 0;
 };
+
+using IInputDataStreamUniquePtr = std::unique_ptr<IInputDataStream>;
