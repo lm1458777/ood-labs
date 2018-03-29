@@ -157,7 +157,7 @@ SCENARIO("FileInputStream tests")
 			while (!stream.IsEOF())
 			{
 				auto n = stream.ReadBlock(buf, sizeof(buf));
-				s.append(buf, n);
+				s.append(buf, gsl::narrow<size_t>(n));
 				bytesRead += gsl::narrow<int>(n);
 			}
 
