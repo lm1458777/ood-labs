@@ -1,6 +1,7 @@
 #pragma once
 #include "Cypher.h"
 #include "IOutputDataStream.h"
+#include <vector>
 
 class EncodedOutputStream : public IOutputDataStream
 {
