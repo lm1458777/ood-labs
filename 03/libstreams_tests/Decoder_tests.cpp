@@ -28,7 +28,7 @@ struct MockInputStream : public IInputDataStream
 
 		auto n = std::min(gsl::narrow<size_t>(size), data.size() - currentPos);
 		auto begin = data.begin() + currentPos;
-		stdext::checked_array_iterator<uint8_t*> itBuffer(static_cast<uint8_t*>(dstBuffer), size);
+		stdext::checked_array_iterator<uint8_t*> itBuffer(static_cast<uint8_t*>(dstBuffer), gsl::narrow<size_t>(size));
 		std::copy(begin, begin + n, itBuffer);
 		currentPos += n;
 		return n;

@@ -27,7 +27,7 @@ bool ContainsUniqueValues(const Cypher& cypher)
 
 bool IsValidEncDecCyphers(const Cypher& enc, const Cypher& dec)
 {
-	for (auto i = 0; i < enc.size(); ++i)
+	for (auto i = 0u; i < enc.size(); ++i)
 	{
 		if (dec.at(enc[i]) != i)
 		{

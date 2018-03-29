@@ -19,7 +19,7 @@ Cypher GenerateCypher(unsigned seed)
 Cypher CreateCypherForDecoding(const Cypher& cypher)
 {
 	Cypher newCypher{};
-	for (auto i = 0; i < cypher.size(); ++i)
+	for (auto i = 0u; i < cypher.size(); ++i)
 	{
 		auto encodedValue = cypher[i];
 		newCypher[encodedValue] = gsl::narrow_cast<uint8_t>(i);

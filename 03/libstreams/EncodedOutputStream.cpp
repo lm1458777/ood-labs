@@ -19,10 +19,10 @@ void EncodedOutputStream::WriteByte(uint8_t data)
 
 void EncodedOutputStream::WriteBlock(const void* srcData, std::streamsize size)
 {
-	auto src = gsl::make_span(static_cast<const uint8_t*>(srcData), size);
+	auto src = gsl::make_span(static_cast<const uint8_t*>(srcData), gsl::narrow<ptrdiff_t>(size));
 
 	m_buffer.clear();
-	m_buffer.reserve(size);
+	m_buffer.reserve(gsl::narrow<size_t>(size));
 	std::transform(src.begin(), src.end(), std::back_inserter(m_buffer), [this](uint8_t srcByte) {
 		return m_cypher[srcByte];
 	});
