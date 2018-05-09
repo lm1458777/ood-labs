@@ -8,7 +8,7 @@ namespace modern_graphics_lib
 class CPoint
 {
 public:
-	CPoint(int x, int y)
+	constexpr CPoint(int x, int y)
 		: x(x)
 		, y(y)
 	{
@@ -17,6 +17,17 @@ public:
 	int x;
 	int y;
 };
+
+inline bool operator==(CPoint pt1, CPoint pt2)
+{
+	return pt1.x == pt2.x
+		&& pt1.y == pt2.y;
+}
+
+inline bool operator!=(CPoint pt1, CPoint pt2)
+{
+	return !(pt1 == pt2);
+}
 
 // Класс для современного рисования графики
 class CModernGraphicsRenderer
