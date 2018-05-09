@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "app.h"
 #include "graphics_lib.h"
 #include "modern_graphics_lib.h"

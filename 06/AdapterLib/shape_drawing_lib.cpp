@@ -1,6 +1,6 @@
+#include "stdafx.h"
 #include "shape_drawing_lib.h"
 #include "graphics_lib.h"
-#include <utility>
 
 namespace shape_drawing_lib
 {

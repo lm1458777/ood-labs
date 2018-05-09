@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "modern_graphics_lib.h"
 #include <boost/format.hpp>
 #include <iostream>
