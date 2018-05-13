@@ -9,7 +9,7 @@
 
 #define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 
+#include <doctest/doctest.h>
+
 #include <iostream>
 #include <vector>
-
-#include <doctest/doctest.h>
