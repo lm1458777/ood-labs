@@ -147,7 +147,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="app.h" />
     <ClInclude Include="CanvasAdapter.h" />
     <ClInclude Include="CanvasClassAdapter.h" />
     <ClInclude Include="graphics_lib.h" />
@@ -157,7 +156,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="app.cpp" />
     <ClCompile Include="CanvasAdapter.cpp" />
     <ClCompile Include="CanvasClassAdapter.cpp" />
     <ClCompile Include="graphics_lib.cpp" />

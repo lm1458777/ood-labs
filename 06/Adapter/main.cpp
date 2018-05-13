@@ -1,6 +1,6 @@
-﻿#include "../AdapterLib/app.h"
+﻿#include "stdafx.h"
+#include "app.h"
 #include <iostream>
-#include <string>
 
 using namespace std;
 

@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "app.h"
-#include "CanvasAdapter.h"
-#include "CanvasClassAdapter.h"
-#include "shape_drawing_lib.h"
-#include <iostream>
+#include "../AdapterLib/CanvasAdapter.h"
+#include "../AdapterLib/CanvasClassAdapter.h"
+#include "../AdapterLib/shape_drawing_lib.h"
 
 namespace app
 {
