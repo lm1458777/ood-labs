@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="CanvasAdapter.h" />
+    <ClInclude Include="CanvasClassAdapter.h" />
     <ClInclude Include="graphics_lib.h" />
     <ClInclude Include="modern_graphics_lib.h" />
     <ClInclude Include="shape_drawing_lib.h" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="app.cpp" />
     <ClCompile Include="CanvasAdapter.cpp" />
+    <ClCompile Include="CanvasClassAdapter.cpp" />
     <ClCompile Include="graphics_lib.cpp" />
     <ClCompile Include="modern_graphics_lib.cpp" />
     <ClCompile Include="shape_drawing_lib.cpp" />

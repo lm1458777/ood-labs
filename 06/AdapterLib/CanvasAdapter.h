@@ -6,7 +6,6 @@
 class CanvasAdapter : public graphics_lib::ICanvas
 {
 public:
-
 	using LinePainter = std::function<void(const modern_graphics_lib::CPoint&, const modern_graphics_lib::CPoint&)>;
 	explicit CanvasAdapter(LinePainter linePainter);
 

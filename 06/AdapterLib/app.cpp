@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "app.h"
+#include "CanvasAdapter.h"
+#include "CanvasClassAdapter.h"
 #include "shape_drawing_lib.h"
 #include <iostream>
-#include "CanvasAdapter.h"
 
 namespace app
 {
@@ -25,12 +26,19 @@ void PaintPictureOnCanvas()
 	PaintPicture(painter);
 }
 
-void PaintPictureOnModernGraphicsRenderer()
+void PaintPictureOnModernGraphicsRendererWithObjectAdapter()
 {
 	modern_graphics_lib::CModernGraphicsRenderer renderer(std::cout);
 	CanvasAdapter canvasAdapter(renderer);
 	shape_drawing_lib::CCanvasPainter painter(canvasAdapter);
 	renderer.BeginDraw();
+	PaintPicture(painter);
+}
+
+void PaintPictureOnModernGraphicsRenderer()
+{
+	CanvasClassAdapter canvasAdapter(std::cout);
+	shape_drawing_lib::CCanvasPainter painter(canvasAdapter);
 	PaintPicture(painter);
 }
 

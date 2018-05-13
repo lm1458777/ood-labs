@@ -33,7 +33,7 @@ inline bool operator!=(CPoint pt1, CPoint pt2)
 class CModernGraphicsRenderer
 {
 public:
-	CModernGraphicsRenderer(std::ostream& strm);
+	explicit CModernGraphicsRenderer(std::ostream& strm);
 
 	~CModernGraphicsRenderer();
 
