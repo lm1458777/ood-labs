@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AdapterPro", "AdapterPro\Ad
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AdapterProLib", "AdapterProLib\AdapterProLib.vcxproj", "{2D526F10-C975-4BD0-95AE-115A4E900371}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AdapterProTests", "AdapterProTests\AdapterProTests.vcxproj", "{CC272DFE-B04F-4E66-BD51-42A3615CA638}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +63,14 @@ Global
 		{2D526F10-C975-4BD0-95AE-115A4E900371}.Release|x64.Build.0 = Release|x64
 		{2D526F10-C975-4BD0-95AE-115A4E900371}.Release|x86.ActiveCfg = Release|Win32
 		{2D526F10-C975-4BD0-95AE-115A4E900371}.Release|x86.Build.0 = Release|Win32
+		{CC272DFE-B04F-4E66-BD51-42A3615CA638}.Debug|x64.ActiveCfg = Debug|x64
+		{CC272DFE-B04F-4E66-BD51-42A3615CA638}.Debug|x64.Build.0 = Debug|x64
+		{CC272DFE-B04F-4E66-BD51-42A3615CA638}.Debug|x86.ActiveCfg = Debug|Win32
+		{CC272DFE-B04F-4E66-BD51-42A3615CA638}.Debug|x86.Build.0 = Debug|Win32
+		{CC272DFE-B04F-4E66-BD51-42A3615CA638}.Release|x64.ActiveCfg = Release|x64
+		{CC272DFE-B04F-4E66-BD51-42A3615CA638}.Release|x64.Build.0 = Release|x64
+		{CC272DFE-B04F-4E66-BD51-42A3615CA638}.Release|x86.ActiveCfg = Release|Win32
+		{CC272DFE-B04F-4E66-BD51-42A3615CA638}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,6 @@
 #pragma once
 #include <iosfwd>
+#include <tuple>
 
 // Пространство имен современной графической библиотеки (недоступно для изменения)
 namespace modern_graphics_lib
@@ -42,6 +43,20 @@ public:
 	}
 	float r, g, b, a;
 };
+
+inline bool operator==(const CRGBAColor& left, const CRGBAColor& right)
+{
+	auto rank = [](const CRGBAColor& color) {
+		return std::make_tuple(color.r, color.b, color.g, color.a);
+	};
+
+	return rank(left) == rank(right);
+}
+
+inline bool operator!=(const CRGBAColor& left, const CRGBAColor& right)
+{
+	return !(left == right);
+}
 
 // Класс для современного рисования графики
 class CModernGraphicsRenderer
