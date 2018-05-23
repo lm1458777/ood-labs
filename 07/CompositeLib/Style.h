@@ -41,6 +41,7 @@ class FillStyle final : public IBaseStyleImpl<IFillStyle>
 {
 public:
 	FillStyle(RGBAColor color, bool enable = true);
+	IFillStylePtr Clone() const override;
 };
 
 class LineStyle final : public IBaseStyleImpl<ILineStyle>
@@ -50,6 +51,8 @@ public:
 
 	float GetWidth() const override;
 	void SetWidth(float width) override;
+
+	virtual ILineStyleUniquePtr Clone() const override;
 
 private:
 	float m_width = 1.f;

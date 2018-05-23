@@ -2,7 +2,7 @@
 #include "CommonTypes.h"
 #include "IGroup_fwd.h"
 #include "IShape_fwd.h"
-#include "IStyle.h"
+#include "IStyle_fwd.h"
 
 class ICanvas;
 
@@ -10,6 +10,8 @@ class IShape
 {
 public:
 	virtual ~IShape() = default;
+
+	virtual IShapeUniquePtr Clone() const = 0;
 
 	virtual RectD GetFrame() const = 0;
 	virtual void SetFrame(const RectD& rect) = 0;

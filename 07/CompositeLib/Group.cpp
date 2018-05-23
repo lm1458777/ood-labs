@@ -1,8 +1,14 @@
 #include "stdafx.h"
 #include "Group.h"
+#include "IStyle.h"
+
+namespace
+{
 
 bool operator==(const IFillStylePtr& style1, const IFillStylePtr& style2)
 {
+	bool use_shared_ptr_eq;
+
 	return style1 && style2
 		&& style1->IsEnabled() == style2->IsEnabled()
 		&& style1->GetColor() == style2->GetColor();
@@ -14,6 +20,21 @@ bool operator==(const ILineStylePtr& style1, const ILineStylePtr& style2)
 		&& style1->IsEnabled() == style2->IsEnabled()
 		&& style1->GetColor() == style2->GetColor()
 		&& style1->GetWidth() == style2->GetWidth();
+}
+
+auto CloneShapes(gsl::span<const IShapePtr> shapes)
+{
+	using namespace boost;
+	return copy_range<std::vector<IShapePtr>>(shapes | adaptors::transformed([](const IShapePtr& shape) -> IShapePtr {
+		return shape->Clone();
+	}));
+}
+
+} // namespace
+
+CGroup::CGroup(const CGroup& other)
+	: m_shapes(CloneShapes(other.m_shapes))
+{
 }
 
 RectD CGroup::GetFrame() const
@@ -146,6 +167,11 @@ void CGroup::RemoveShapeAtIndex(size_t index)
 	}
 
 	m_shapes.erase(m_shapes.begin() + index);
+}
+
+IShapeUniquePtr CGroup::Clone() const
+{
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void AddShape(IGroup& group, const IShapePtr& shape)

@@ -2,11 +2,19 @@
 #include "Shape.h"
 #include "ColorUtils.h"
 #include "ICanvas.h"
+#include "IStyle.h"
 
 CShape::CShape(const RectD& frame, IFillStylePtr fillStyle, ILineStylePtr lineStyle)
 	: m_frame(frame)
 	, m_lineStyle{ std::move(lineStyle) }
 	, m_fillStyle{ std::move(fillStyle) }
+{
+}
+
+CShape::CShape(const CShape& other)
+	: m_frame(other.m_frame)
+	, m_fillStyle(other.m_fillStyle->Clone())
+	, m_lineStyle(other.m_lineStyle->Clone())
 {
 }
 
