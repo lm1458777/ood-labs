@@ -73,3 +73,8 @@ void GdiCanvas::DrawPoligon(gsl::span<const PointD> points)
 
 	VerifyStatus(m_graphics.DrawPolygon(&m_pen, vertices.data(), verticesCount));
 }
+
+void GdiCanvas::SetLineWidth(float width)
+{
+	m_pen.SetWidth(width);
+}

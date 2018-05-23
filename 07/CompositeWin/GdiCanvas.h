@@ -8,8 +8,11 @@ public:
 	explicit GdiCanvas(CDCHandle dc);
 
 	void SetLineColor(RGBAColor color) override;
+	void SetLineWidth(float width) override;
+
 	void BeginFill(RGBAColor color) override;
 	void EndFill() override;
+
 	void DrawEllipse(const RectD& bounds) override;
 	void DrawPoligon(gsl::span<const PointD> points) override;
 

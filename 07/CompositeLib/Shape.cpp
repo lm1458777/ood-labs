@@ -56,8 +56,16 @@ void CShape::Draw(ICanvas& canvas) const
 		canvas.BeginFill(m_fillStyle->GetColor());
 	}
 
-	const auto lineColor = m_lineStyle && m_lineStyle->IsEnabled() ? m_lineStyle->GetColor() : TRANSPARENT_COLOR;
-	canvas.SetLineColor(lineColor);
+	if (m_lineStyle && m_lineStyle->IsEnabled())
+	{
+		canvas.SetLineColor(m_lineStyle->GetColor());
+		canvas.SetLineWidth(m_lineStyle->GetWidth());
+	}
+	else
+	{
+		canvas.SetLineColor(TRANSPARENT_COLOR);
+		canvas.SetLineWidth(0.f);
+	}
 
 	DrawBehavior(canvas);
 
