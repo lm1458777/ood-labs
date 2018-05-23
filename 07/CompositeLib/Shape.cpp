@@ -3,7 +3,7 @@
 #include "ColorUtils.h"
 #include "ICanvas.h"
 
-CShape::CShape(const RectD& frame, IStylePtr fillStyle, IStylePtr lineStyle)
+CShape::CShape(const RectD& frame, IFillStylePtr fillStyle, ILineStylePtr lineStyle)
 	: m_frame(frame)
 	, m_lineStyle{ std::move(lineStyle) }
 	, m_fillStyle{ std::move(fillStyle) }
@@ -20,22 +20,22 @@ void CShape::SetFrame(const RectD& rect)
 	m_frame = rect;
 }
 
-IStylePtr CShape::GetLineStyle() const
+ILineStylePtr CShape::GetLineStyle() const
 {
 	return m_lineStyle;
 }
 
-void CShape::SetLineStyle(const IStylePtr& style)
+void CShape::SetLineStyle(const ILineStylePtr& style)
 {
 	m_lineStyle = style;
 }
 
-IStylePtr CShape::GetFillStyle() const
+IFillStylePtr CShape::GetFillStyle() const
 {
 	return m_fillStyle;
 }
 
-void CShape::SetFillStyle(const IStylePtr& style)
+void CShape::SetFillStyle(const IFillStylePtr& style)
 {
 	m_fillStyle = style;
 }

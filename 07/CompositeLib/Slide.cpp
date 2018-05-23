@@ -1,17 +1,16 @@
 #include "stdafx.h"
 #include "Slide.h"
+#include "ColorUtils.h"
 #include "Group.h"
 #include "Rectangle.h"
-#include "Style.h"
+#include "StyleFactory.h"
 
-using std::make_shared;
-
-CSlide::CSlide()
-	: m_shapes{ make_shared<CGroup>() }
-	, m_backgroundFillStyle{ make_shared<CStyle>(true, 0) }
+CSlide::CSlide(double width, double height)
+	: m_shapes{ std::make_shared<CGroup>() }
+	, m_backgroundFillStyle{ CreateFillStyle(MakeColorRGB(0xff, 0xff, 0xff)) }
 {
-	auto bgRect = make_shared<CRectangle>(
-		RectD{ 0, 0, 400, 300 },
+	auto bgRect = std::make_shared<CRectangle>(
+		RectD{ 0, 0, width, height },
 		m_backgroundFillStyle,
 		nullptr);
 	AddShape(bgRect);

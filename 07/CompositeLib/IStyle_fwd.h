@@ -1,4 +1,7 @@
 #pragma once
 
-class IStyle;
-using IStylePtr = std::shared_ptr<IStyle>;
+class IFillStyle;
+using IFillStylePtr = std::shared_ptr<IFillStyle>;
+
+class ILineStyle;
+using ILineStylePtr = std::shared_ptr<ILineStyle>;

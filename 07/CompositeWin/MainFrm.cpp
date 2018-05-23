@@ -7,7 +7,7 @@
 #include "../CompositeLib/Group.h"
 #include "../CompositeLib/Rectangle.h"
 #include "../CompositeLib/Slide.h"
-#include "../CompositeLib/Style.h"
+#include "../CompositeLib/StyleFactory.h"
 
 using namespace std;
 
@@ -18,18 +18,18 @@ auto CreateSlide()
 {
 	auto rect1 = make_shared<CRectangle>(
 		RectD{ 10, 10, 100, 100 },
-		make_shared<CStyle>(true, MakeColorRGB(0xff, 0, 0)),
-		make_shared<CStyle>(true, MakeColorRGB(0, 0, 0)));
+		CreateFillStyle(MakeColorRGB(0xff, 0, 0)),
+		CreateLineStyle(MakeColorRGB(0, 0, 0), 5.f));
 
 	auto rect2 = make_shared<CRectangle>(
 		RectD{ 120, 10, 100, 100 },
-		make_shared<CStyle>(true, MakeColorRGB(0, 0xff, 0)),
-		make_shared<CStyle>(true, MakeColorRGB(0x64, 0x64, 0x64)));
+		CreateFillStyle(MakeColorRGB(0, 0xff, 0)),
+		CreateLineStyle(MakeColorRGB(0x64, 0x64, 0x64), 3.f));
 
 	auto rect3 = make_shared<CRectangle>(
 		RectD{ 230, 10, 100, 100 },
-		make_shared<CStyle>(true, MakeColorRGB(0, 0, 0xff)),
-		make_shared<CStyle>(false, MakeColorRGB(0xff, 0x7f, 0x7f)));
+		CreateFillStyle(MakeColorRGB(0, 0, 0xff)),
+		CreateLineStyle(MakeColorRGB(0xff, 0x7f, 0x7f), 0.f, false));
 
 	//CEllipse ellipse(
 	//	RectD { 100, 100, 200, 100 },
@@ -53,7 +53,7 @@ auto CreateSlide()
 	//RectD groupFrame = { 0, 200, 600, 100 };
 	//group->SetFrame(groupFrame);
 
-	auto slide = make_unique<CSlide>();
+	auto slide = make_unique<CSlide>(800, 600);
 	slide->SetBackgroundColor(0x80ff80ff);
 	//slide.AddShape(make_shared<CTriangle>(triangle));
 	//slide.AddShape(make_shared<CEllipse>(ellipse));
