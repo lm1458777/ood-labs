@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Shape.h"
+#include "ColorUtils.h"
 #include "ICanvas.h"
 
 CShape::CShape(const RectD& frame, IStylePtr fillStyle, IStylePtr lineStyle)
@@ -46,6 +47,8 @@ IGroupPtr CShape::GetGroup()
 
 void CShape::Draw(ICanvas& canvas) const
 {
+	constexpr auto TRANSPARENT_COLOR = MakeColorRGBA(0, 0, 0, 0);
+
 	const bool fillEnabled = m_fillStyle && m_fillStyle->IsEnabled();
 
 	if (fillEnabled)
@@ -53,7 +56,7 @@ void CShape::Draw(ICanvas& canvas) const
 		canvas.BeginFill(m_fillStyle->GetColor());
 	}
 
-	const auto lineColor = m_lineStyle && m_lineStyle->IsEnabled() ? m_lineStyle->GetColor() : 0;
+	const auto lineColor = m_lineStyle && m_lineStyle->IsEnabled() ? m_lineStyle->GetColor() : TRANSPARENT_COLOR;
 	canvas.SetLineColor(lineColor);
 
 	DrawBehavior(canvas);

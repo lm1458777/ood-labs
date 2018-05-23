@@ -1,55 +1,75 @@
 #include "stdafx.h"
 #include "GdiCanvas.h"
+#include "../CompositeLib/ColorUtils.h"
 
+using namespace Gdiplus;
 using namespace boost;
 using std::vector;
 
+namespace
+{
+
+auto ToGdiplusColor(RGBAColor rgba)
+{
+	return Gdiplus::Color::MakeARGB(
+		GetAlphaValue(rgba),
+		GetRedValue(rgba),
+		GetGreenValue(rgba),
+		GetBlueValue(rgba));
+}
+
+auto CastToPointF(gsl::span<const PointD> points)
+{
+	auto toPoint = [](PointD pt) {
+		return PointF{ gsl::narrow_cast<float>(pt.x), gsl::narrow_cast<float>(pt.y) };
+	};
+
+	return copy_range<vector<PointF>>(points | adaptors::transformed(toPoint));
+}
+
+void VerifyStatus(Status st)
+{
+	ATLVERIFY(Status::Ok == st);
+}
+
+} // namespace
+
 GdiCanvas::GdiCanvas(CDCHandle dc)
-	: m_dc(dc)
+	: m_graphics(dc)
+	, m_pen(Color::Black)
 {
+	VerifyStatus(m_pen.SetAlignment(PenAlignmentInset));
 }
 
-void GdiCanvas::DrawEllipse(double left, double top, double width, double height)
-{
-	throw std::logic_error("The method or operation is not implemented.");
-}
-
-void GdiCanvas::LineTo(double x, double y)
-{
-	throw std::logic_error("The method or operation is not implemented.");
-}
-
-void GdiCanvas::MoveTo(double x, double y)
+void GdiCanvas::DrawEllipse(const RectD& bounds)
 {
 	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void GdiCanvas::EndFill()
 {
-	m_fillColor.reset();
+	m_brush.reset();
 }
 
 void GdiCanvas::BeginFill(RGBAColor color)
 {
-	m_fillColor = color;
+	m_brush.emplace(ToGdiplusColor(color));
 }
 
 void GdiCanvas::SetLineColor(RGBAColor color)
 {
-	//throw std::logic_error("The method or operation is not implemented.");
+	VerifyStatus(m_pen.SetColor(ToGdiplusColor(color)));
 }
 
 void GdiCanvas::DrawPoligon(gsl::span<const PointD> points)
 {
-	auto toPoint = [](PointD pt) {
-		return POINT{ gsl::narrow_cast<LONG>(pt.x), gsl::narrow_cast<LONG>(pt.y) };
-	};
+	const auto vertices = CastToPointF(points);
+	const auto verticesCount = gsl::narrow<int>(vertices.size());
 
-	const auto vertices = copy_range<vector<POINT>>(points | adaptors::transformed(toPoint));
+	if (m_brush)
+	{
+		VerifyStatus(m_graphics.FillPolygon(m_brush.get_ptr(), vertices.data(), verticesCount));
+	}
 
-	CBrush brush;
-	brush.CreateSolidBrush(RGB(0x80, 0xff, 0x80));
-	auto oldBrush = m_dc.SelectBrush(brush);
-	m_dc.Polygon(vertices.data(), gsl::narrow<int>(vertices.size()));
-	m_dc.SelectBrush(oldBrush);
+	VerifyStatus(m_graphics.DrawPolygon(&m_pen, vertices.data(), verticesCount));
 }

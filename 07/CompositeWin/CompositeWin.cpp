@@ -6,6 +6,29 @@
 
 CAppModule _Module;
 
+using namespace Gdiplus;
+
+namespace
+{
+
+class GdiPlusInit : boost::noncopyable
+{
+public:
+	GdiPlusInit()
+	{
+		GdiplusStartup(&m_token, &m_input, nullptr);
+	}
+
+	~GdiPlusInit()
+	{
+		GdiplusShutdown(m_token);
+	}
+
+private:
+	GdiplusStartupInput m_input;
+	ULONG_PTR m_token = 0;
+};
+
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 	CMessageLoop theLoop;
@@ -27,8 +50,12 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	return nRet;
 }
 
+} // namespace
+
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
+	GdiPlusInit gdiPlus;
+
 	HRESULT hRes = ::CoInitialize(NULL);
 	// If you are running on NT 4.0 or higher you can use the following call instead to
 	// make the EXE free threaded. This means that calls come in on a random RPC thread.

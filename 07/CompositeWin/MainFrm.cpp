@@ -3,6 +3,7 @@
 #include "AboutDlg.h"
 #include "GdiCanvas.h"
 
+#include "../CompositeLib/ColorUtils.h"
 #include "../CompositeLib/Group.h"
 #include "../CompositeLib/Rectangle.h"
 #include "../CompositeLib/Slide.h"
@@ -15,10 +16,20 @@ namespace
 
 auto CreateSlide()
 {
-	CRectangle rectangle(
-		RectD{ 0, 0, 100, 100 },
-		make_shared<CStyle>(true, 0x000000FF),
-		make_shared<CStyle>(true, 0xFF0000FF));
+	auto rect1 = make_shared<CRectangle>(
+		RectD{ 10, 10, 100, 100 },
+		make_shared<CStyle>(true, MakeColorRGB(0xff, 0, 0)),
+		make_shared<CStyle>(true, MakeColorRGB(0, 0, 0)));
+
+	auto rect2 = make_shared<CRectangle>(
+		RectD{ 120, 10, 100, 100 },
+		make_shared<CStyle>(true, MakeColorRGB(0, 0xff, 0)),
+		make_shared<CStyle>(true, MakeColorRGB(0x64, 0x64, 0x64)));
+
+	auto rect3 = make_shared<CRectangle>(
+		RectD{ 230, 10, 100, 100 },
+		make_shared<CStyle>(true, MakeColorRGB(0, 0, 0xff)),
+		make_shared<CStyle>(false, MakeColorRGB(0xff, 0x7f, 0x7f)));
 
 	//CEllipse ellipse(
 	//	RectD { 100, 100, 200, 100 },
@@ -33,21 +44,23 @@ auto CreateSlide()
 	//	make_shared<CStyle>(false, 0x0000FFFF),
 	//	5.f);
 
-	auto group = make_shared<CGroup>();
-	group->InsertShape(make_shared<CRectangle>(rectangle), 0);
-	//group->InsertShape(make_shared<CEllipse>(ellipse), 1);
-	group->SetFillStyle(make_shared<CStyle>(true, 0xFF0000FF));
+	//auto group = make_shared<CGroup>();
+	//AddShape(*group, make_shared<CRectangle>(*rect1));
+	////group->InsertShape(make_shared<CEllipse>(ellipse), 1);
+	//group->SetFillStyle(make_shared<CStyle>(true, 0xFF00007F));
 	//group->InsertShape(make_shared<CTriangle>(triangle), 1);
 
-	RectD groupFrame = { 0, 0, 600, 100 };
-	group->SetFrame(groupFrame);
+	//RectD groupFrame = { 0, 200, 600, 100 };
+	//group->SetFrame(groupFrame);
 
 	auto slide = make_unique<CSlide>();
 	slide->SetBackgroundColor(0x80ff80ff);
 	//slide.AddShape(make_shared<CTriangle>(triangle));
 	//slide.AddShape(make_shared<CEllipse>(ellipse));
-	slide->AddShape(make_shared<CRectangle>(rectangle));
-	slide->AddShape(group);
+	slide->AddShape(rect1);
+	slide->AddShape(rect2);
+	slide->AddShape(rect3);
+	//slide->AddShape(group);
 
 	return slide;
 }
@@ -120,5 +133,8 @@ void CMainFrame::OnPaint(CDCHandle /*dc*/)
 	CMemoryDC memDC{ paintDC.m_hDC, paintDC.m_ps.rcPaint };
 
 	GdiCanvas canvas{ memDC.m_hDC };
+	bool remove_me;
+	CDCHandle dc{ memDC.m_hDC };
+	dc.FillSolidRect(&paintDC.m_ps.rcPaint, RGB(0xff, 0xff, 0xff));
 	m_slide->Draw(canvas);
 }

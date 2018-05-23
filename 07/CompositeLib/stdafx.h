@@ -12,6 +12,8 @@
 #include <gsl/gsl>
 
 #include <algorithm>
+#include <cstdint>
+#include <intsafe.h>
 #include <memory>
 #include <vector>
 
