@@ -16,11 +16,15 @@ public:
 
 class IFillStyle : public IBaseStyle
 {
+public:
+	virtual IFillStylePtr Clone() const = 0;
 };
 
 class ILineStyle : public IBaseStyle
 {
 public:
+	virtual ILineStyleUniquePtr Clone() const = 0;
+
 	virtual float GetWidth() const = 0;
 	virtual void SetWidth(float width) = 0;
 };

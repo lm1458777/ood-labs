@@ -7,6 +7,11 @@ CRectangle::CRectangle(const RectD& frame, const IFillStylePtr& fillStyle, const
 {
 }
 
+IShapeUniquePtr CRectangle::Clone() const
+{
+	return std::make_unique<CRectangle>(*this);
+}
+
 void CRectangle::DrawBehavior(ICanvas& canvas) const
 {
 	auto frame = GetFrame();

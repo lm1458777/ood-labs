@@ -5,6 +5,9 @@ class CShape : public IShape
 {
 public:
 	CShape(const RectD& frame, IFillStylePtr fillStyle, ILineStylePtr lineStyle);
+	CShape(const CShape& other);
+
+	CShape& operator=(const CShape&) = delete;
 
 	RectD GetFrame() const override;
 	void SetFrame(const RectD& rect) override;

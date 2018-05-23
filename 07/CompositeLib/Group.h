@@ -6,6 +6,10 @@ class CGroup
 	, public std::enable_shared_from_this<IGroup>
 {
 public:
+	CGroup() = default;
+	CGroup(const CGroup& other);
+	CGroup& operator=(const CGroup& other) = delete;
+
 	RectD GetFrame() const override;
 	void SetFrame(const RectD& rect) override;
 
@@ -23,6 +27,8 @@ public:
 	IShapePtr GetShapeAtIndex(size_t index) override;
 	void InsertShape(const IShapePtr& shape, size_t index) override;
 	void RemoveShapeAtIndex(size_t index) override;
+
+	IShapeUniquePtr Clone() const override;
 
 private:
 	std::vector<IShapePtr> m_shapes;
