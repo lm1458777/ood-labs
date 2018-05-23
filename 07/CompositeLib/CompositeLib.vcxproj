@@ -159,6 +159,7 @@
     <ClInclude Include="IStyle_fwd.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Shape.h" />
+    <ClInclude Include="ShapeFactory.h" />
     <ClInclude Include="Slide.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Style.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="Group.cpp" />
     <ClCompile Include="Rectangle.cpp" />
     <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="ShapeFactory.cpp" />
     <ClCompile Include="Slide.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

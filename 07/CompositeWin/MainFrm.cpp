@@ -5,7 +5,7 @@
 
 #include "../CompositeLib/ColorUtils.h"
 #include "../CompositeLib/Group.h"
-#include "../CompositeLib/Rectangle.h"
+#include "../CompositeLib/ShapeFactory.h"
 #include "../CompositeLib/Slide.h"
 #include "../CompositeLib/StyleFactory.h"
 
@@ -16,17 +16,17 @@ namespace
 
 auto CreateSlide()
 {
-	auto rect1 = make_shared<CRectangle>(
+	auto rect1 = CreateRectangle(
 		RectD{ 10, 10, 100, 100 },
 		CreateFillStyle(MakeColorRGB(0xff, 0, 0)),
 		CreateLineStyle(MakeColorRGB(0, 0, 0), 5.f));
 
-	auto rect2 = make_shared<CRectangle>(
+	auto rect2 = CreateRectangle(
 		RectD{ 120, 10, 100, 100 },
 		CreateFillStyle(MakeColorRGB(0, 0xff, 0)),
 		CreateLineStyle(MakeColorRGB(0x64, 0x64, 0x64), 3.f));
 
-	auto rect3 = make_shared<CRectangle>(
+	auto rect3 = CreateRectangle(
 		RectD{ 230, 10, 100, 100 },
 		CreateFillStyle(MakeColorRGB(0, 0, 0xff)),
 		CreateLineStyle(MakeColorRGB(0xff, 0x7f, 0x7f), 0.f, false));
