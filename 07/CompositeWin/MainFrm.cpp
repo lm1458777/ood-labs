@@ -135,6 +135,6 @@ void CMainFrame::OnPaint(CDCHandle /*dc*/)
 	GdiCanvas canvas{ memDC.m_hDC };
 	bool remove_me;
 	CDCHandle dc{ memDC.m_hDC };
-	dc.FillSolidRect(&paintDC.m_ps.rcPaint, RGB(0xff, 0xff, 0xff));
+	dc.FillSolidRect(&paintDC.m_ps.rcPaint, RGB(0, 0, 0));
 	m_slide->Draw(canvas);
 }
