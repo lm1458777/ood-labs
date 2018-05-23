@@ -9,11 +9,11 @@ public:
 	RectD GetFrame() const override;
 	void SetFrame(const RectD& rect) override;
 
-	IStylePtr GetLineStyle() const override;
-	void SetLineStyle(const IStylePtr& style) override;
+	ILineStylePtr GetLineStyle() const override;
+	void SetLineStyle(const ILineStylePtr& style) override;
 
-	IStylePtr GetFillStyle() const override;
-	void SetFillStyle(const IStylePtr& style) override;
+	IFillStylePtr GetFillStyle() const override;
+	void SetFillStyle(const IFillStylePtr& style) override;
 
 	void Draw(ICanvas& canvas) const override;
 

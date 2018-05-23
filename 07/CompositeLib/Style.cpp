@@ -1,28 +1,23 @@
 #include "stdafx.h"
 #include "Style.h"
 
-CStyle::CStyle(bool enable, RGBAColor color)
-	: m_isEnabled(enable)
-	, m_color(color)
+FillStyle::FillStyle(RGBAColor color, bool enable)
+	: IBaseStyleImpl(color, enable)
 {
 }
 
-bool CStyle::IsEnabled() const
+LineStyle::LineStyle(RGBAColor color, float width, bool enable)
+	: IBaseStyleImpl(color, enable)
+	, m_width(width)
 {
-	return m_isEnabled;
 }
 
-void CStyle::Enable(bool enable)
+float LineStyle::GetWidth() const
 {
-	m_isEnabled = enable;
+	return m_width;
 }
 
-RGBAColor CStyle::GetColor() const
+void LineStyle::SetWidth(float width)
 {
-	return m_color;
-}
-
-void CStyle::SetColor(RGBAColor color)
-{
-	m_color = color;
+	m_width = width;
 }

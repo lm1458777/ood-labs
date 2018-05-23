@@ -1,11 +1,19 @@
 #include "stdafx.h"
 #include "Group.h"
 
-bool operator==(const IStylePtr& style1, const IStylePtr& style2)
+bool operator==(const IFillStylePtr& style1, const IFillStylePtr& style2)
 {
 	return style1 && style2
 		&& style1->IsEnabled() == style2->IsEnabled()
 		&& style1->GetColor() == style2->GetColor();
+}
+
+bool operator==(const ILineStylePtr& style1, const ILineStylePtr& style2)
+{
+	return style1 && style2
+		&& style1->IsEnabled() == style2->IsEnabled()
+		&& style1->GetColor() == style2->GetColor()
+		&& style1->GetWidth() == style2->GetWidth();
 }
 
 RectD CGroup::GetFrame() const
@@ -54,10 +62,10 @@ void CGroup::SetFrame(const RectD& rect)
 	}
 }
 
-IStylePtr CGroup::GetLineStyle() const
+ILineStylePtr CGroup::GetLineStyle() const
 {
 	bool todo_fixme;
-	IStylePtr lineStyle;
+	ILineStylePtr lineStyle;
 	if (!m_shapes.empty())
 	{
 		bool stylesEqual = std::all_of(m_shapes.cbegin(), m_shapes.cend(), [&](auto& shape) {
@@ -68,17 +76,17 @@ IStylePtr CGroup::GetLineStyle() const
 	return lineStyle;
 }
 
-void CGroup::SetLineStyle(const IStylePtr& style)
+void CGroup::SetLineStyle(const ILineStylePtr& style)
 {
 	boost::for_each(m_shapes, [&style](const auto& shape) {
 		shape->SetLineStyle(style);
 	});
 }
 
-IStylePtr CGroup::GetFillStyle() const
+IFillStylePtr CGroup::GetFillStyle() const
 {
 	bool todo_fixme;
-	IStylePtr fillStyle;
+	IFillStylePtr fillStyle;
 	if (!m_shapes.empty())
 	{
 		bool stylesEqual = std::all_of(m_shapes.cbegin(), m_shapes.cend(), [&](auto& shape) {
@@ -89,7 +97,7 @@ IStylePtr CGroup::GetFillStyle() const
 	return fillStyle;
 }
 
-void CGroup::SetFillStyle(const IStylePtr& style)
+void CGroup::SetFillStyle(const IFillStylePtr& style)
 {
 	boost::for_each(m_shapes, [&style](const auto& shape) {
 		shape->SetFillStyle(style);

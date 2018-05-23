@@ -9,7 +9,7 @@ class ICanvas;
 class CSlide
 {
 public:
-	CSlide();
+	CSlide(double width, double height);
 	~CSlide();
 
 	RGBAColor GetBackgroundColor() const;
@@ -20,5 +20,5 @@ public:
 
 private:
 	IGroupPtr m_shapes;
-	IStylePtr m_backgroundFillStyle;
+	IFillStylePtr m_backgroundFillStyle;
 };
