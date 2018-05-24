@@ -1,13 +1,19 @@
 #pragma once
 #include "IShape.h"
 
-class CShape : public IShape
+using DrawBehavior = std::function<void(const RectD& frame, ICanvas& canvas)>;
+
+class CSimpleShape : public IShape
 {
 public:
-	CShape(const RectD& frame, IFillStylePtr fillStyle, ILineStylePtr lineStyle);
-	CShape(const CShape& other);
+	CSimpleShape(const RectD& frame, IFillStylePtr fillStyle, ILineStylePtr lineStyle, DrawBehavior drawBehavior);
+	CSimpleShape(const CSimpleShape& other);
+	CSimpleShape(CSimpleShape&&) = default;
 
-	CShape& operator=(const CShape&) = delete;
+	CSimpleShape& operator=(const CSimpleShape&) = delete;
+	CSimpleShape& operator=(CSimpleShape&&) = default;
+
+	IShapePtr Clone() const override;
 
 	RectD GetFrame() const override;
 	void SetFrame(const RectD& rect) override;
@@ -23,10 +29,8 @@ public:
 	void Draw(ICanvas& canvas) const override;
 
 private:
-	virtual void DrawBehavior(ICanvas& canvas) const = 0;
-
-private:
 	RectD m_frame;
 	IFillStylePtr m_fillStyle;
 	ILineStylePtr m_lineStyle;
+	DrawBehavior m_drawBehavior;
 };
