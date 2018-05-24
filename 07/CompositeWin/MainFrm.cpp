@@ -79,7 +79,7 @@ auto CreateSlide()
 	assert(group2->GetFillStyle() == nullptr);
 	group2->SetFillStyle(CreateFillStyle(MakeColorRGB(0x5b, 0x9b, 0xd5)));
 	assert(group2->GetFillStyle() != nullptr);
-	group2->SetFrame(RectD{ 10, 240, 640, 150 });
+	group2->SetFrame(RectD{ 10, 240, 480, 150 });
 
 	auto slide = make_unique<CSlide>(800, 600);
 	slide->SetBackgroundColor(MakeColorRGB(0xff, 0xff, 0xe0));

@@ -21,14 +21,18 @@ T GetStyle(gsl::span<const IShapePtr> shapes, StyleGetter styleGetter)
 		return T{};
 	}
 
-	T style = std::invoke(styleGetter, *shapes.at(0));
+	auto getStyle = [styleGetter](const IShapePtr& shape) {
+		return std::invoke(styleGetter, *shape);
+	};
+
+	T style = getStyle(shapes.at(0));
 	if (shapes.size() == 1)
 	{
 		return style;
 	}
 
-	bool allShapesHasSameStyle = all_of(shapes.begin() + 1, shapes.end(), [&style, styleGetter](const IShapePtr& shape) {
-		return std::invoke(styleGetter, *shape) == style;
+	bool allShapesHasSameStyle = all_of(shapes.begin() + 1, shapes.end(), [&style, getStyle](const IShapePtr& shape) {
+		return getStyle(shape) == style;
 	});
 
 	return allShapesHasSameStyle ? style : T{};

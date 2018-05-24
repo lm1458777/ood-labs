@@ -49,6 +49,7 @@ GdiCanvas::GdiCanvas(CDCHandle dc)
 	, m_pen(static_cast<ARGB>(Color::Black))
 {
 	VerifyStatus(m_pen.SetAlignment(PenAlignmentInset));
+	VerifyStatus(m_graphics.SetInterpolationMode(InterpolationModeHighQuality));
 }
 
 void GdiCanvas::DrawEllipse(const RectD& bounds)
