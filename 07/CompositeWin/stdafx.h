@@ -30,6 +30,8 @@
 extern CAppModule _Module;
 
 #include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/irange.hpp>
 #include <boost/range/iterator_range_core.hpp>
 
 #pragma warning(push)

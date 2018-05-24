@@ -4,7 +4,8 @@
 #include "GdiCanvas.h"
 
 #include "../CompositeLib/ColorUtils.h"
-#include "../CompositeLib/Group.h"
+#include "../CompositeLib/IGroup.h"
+#include "../CompositeLib/IStyle.h"
 #include "../CompositeLib/ShapeFactory.h"
 #include "../CompositeLib/Slide.h"
 #include "../CompositeLib/StyleFactory.h"
@@ -14,54 +15,74 @@ using namespace std;
 namespace
 {
 
+RGBAColor SetAlpha(RGBAColor color, BYTE alpha)
+{
+	return MakeColorRGBA(
+		GetRedValue(color),
+		GetGreenValue(color),
+		GetBlueValue(color),
+		alpha);
+}
+
+void SetAlpha(IGroup& group, BYTE a)
+{
+	auto getShape = [&group](auto index) {
+		return group.GetShapeAtIndex(index);
+	};
+
+	boost::for_each(boost::irange<size_t>(0, group.GetShapesCount()) | boost::adaptors::transformed(getShape), [a](const IShapePtr& shape) {
+		auto fillStyle = shape->GetFillStyle();
+		fillStyle->SetColor(SetAlpha(fillStyle->GetColor(), a));
+
+		auto lineStyle = shape->GetLineStyle();
+		lineStyle->SetColor(SetAlpha(lineStyle->GetColor(), a));
+	});
+}
+
 auto CreateSlide()
 {
-	auto rect1 = CreateRectangle(
+	auto shape1 = CreateRectangle(
 		RectD{ 10, 10, 100, 100 },
 		CreateFillStyle(MakeColorRGB(0xff, 0, 0)),
 		CreateLineStyle(MakeColorRGB(0, 0, 0), 5.f));
 
-	auto rect2 = CreateRectangle(
+	auto shape2 = CreateTriangle(
 		RectD{ 120, 10, 100, 100 },
 		CreateFillStyle(MakeColorRGB(0, 0xff, 0)),
 		CreateLineStyle(MakeColorRGB(0x64, 0x64, 0x64), 3.f));
 
-	auto rect3 = CreateRectangle(
+	auto shape3 = CreateEllipse(
 		RectD{ 230, 10, 100, 100 },
 		CreateFillStyle(MakeColorRGB(0, 0, 0xff)),
 		CreateLineStyle(MakeColorRGB(0xff, 0x7f, 0x7f), 0.f, false));
 
-	//CEllipse ellipse(
-	//	RectD { 100, 100, 200, 100 },
-	//	make_shared<CStyle>(true, 0x0000FFFF),
-	//	make_shared<CStyle>(true, 0xFFFF00FF),
-	//	3.f
-	//);
+	auto group1 = CreateGroup();
+	AddShape(*group1, shape1->Clone());
+	AddShape(*group1, shape2->Clone());
+	AddShape(*group1, shape3->Clone());
+	AddShape(*group1, CreateRectangle(
+		RectD{ 340, 10, 150, 100 },
+		CreateFillStyle(MakeColorRGB(0x7f, 0x7f, 0x7f)),
+		CreateLineStyle(MakeColorRGB(0xff, 0xff, 0xff), 5.f)));
+	SetAlpha(*group1, 0x7f);
+	group1->SetFrame(RectD{ 10, 120, 480, 100 });
 
-	//CTriangle triangle(
-	//	RectD { 300, 300, 100, 100 },
-	//	make_shared<CStyle>(true, 0x00FF00FF),
-	//	make_shared<CStyle>(false, 0x0000FFFF),
-	//	5.f);
-
-	//auto group = make_shared<CGroup>();
-	//AddShape(*group, make_shared<CRectangle>(*rect1));
-	////group->InsertShape(make_shared<CEllipse>(ellipse), 1);
-	//group->SetFillStyle(make_shared<CStyle>(true, 0xFF00007F));
-	//group->InsertShape(make_shared<CTriangle>(triangle), 1);
-
-	//RectD groupFrame = { 0, 200, 600, 100 };
-	//group->SetFrame(groupFrame);
+	auto group2 = group1->Clone();
+	AddShape(*group2->GetGroup(), CreateTriangle(
+		RectD{ 500, 130, 150, 80 },
+		CreateNoFillStyle(),
+		CreateNoLineStyle()));
+	group2->SetLineStyle(CreateLineStyle(MakeColorRGB(0x41, 0x71, 0x9c), 3.f));
+	group2->SetFillStyle(CreateFillStyle(MakeColorRGB(0x5b, 0x9b, 0xd5)));
+	group2->SetFrame(RectD{ 10, 240, 640, 150 });
 
 	auto slide = make_unique<CSlide>(800, 600);
-	slide->SetBackgroundColor(0x80ff80ff);
-	//slide.AddShape(make_shared<CTriangle>(triangle));
-	//slide.AddShape(make_shared<CEllipse>(ellipse));
-	slide->AddShape(rect1);
-	slide->AddShape(rect2);
-	slide->AddShape(rect3);
-	//slide->AddShape(group);
-
+	slide->SetBackgroundColor(MakeColorRGB(0xff, 0xff, 0xe0));
+	slide->AddShape(shape1);
+	slide->AddShape(shape2);
+	slide->AddShape(shape3);
+	slide->AddShape(group1);
+	slide->AddShape(group2);
 	return slide;
 }
 
