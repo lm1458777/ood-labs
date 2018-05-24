@@ -21,10 +21,20 @@ auto ToGdiplusColor(RGBAColor rgba)
 auto CastToPointF(gsl::span<const PointD> points)
 {
 	auto toPoint = [](PointD pt) {
-		return PointF{ gsl::narrow_cast<float>(pt.x), gsl::narrow_cast<float>(pt.y) };
+		return PointF{ gsl::narrow_cast<REAL>(pt.x), gsl::narrow_cast<REAL>(pt.y) };
 	};
 
 	return copy_range<vector<PointF>>(points | adaptors::transformed(toPoint));
+}
+
+auto CastToRectF(const RectD& r)
+{
+	return Gdiplus::RectF{
+		gsl::narrow_cast<REAL>(r.left),
+		gsl::narrow_cast<REAL>(r.top),
+		gsl::narrow_cast<REAL>(r.width),
+		gsl::narrow_cast<REAL>(r.height)
+	};
 }
 
 void VerifyStatus(Status st)
@@ -36,14 +46,21 @@ void VerifyStatus(Status st)
 
 GdiCanvas::GdiCanvas(CDCHandle dc)
 	: m_graphics(dc)
-	, m_pen(Color::Black)
+	, m_pen(static_cast<ARGB>(Color::Black))
 {
 	VerifyStatus(m_pen.SetAlignment(PenAlignmentInset));
 }
 
 void GdiCanvas::DrawEllipse(const RectD& bounds)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	const auto frame = CastToRectF(bounds);
+
+	if (m_brush)
+	{
+		VerifyStatus(m_graphics.FillEllipse(m_brush.get_ptr(), frame));
+	}
+
+	VerifyStatus(m_graphics.DrawEllipse(&m_pen, frame));
 }
 
 void GdiCanvas::EndFill()

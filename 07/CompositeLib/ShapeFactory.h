@@ -5,5 +5,7 @@
 #include "IStyle_fwd.h"
 
 IShapePtr CreateRectangle(const RectD& frame, const IFillStylePtr& fillStyle, const ILineStylePtr& lineStyle);
+IShapePtr CreateTriangle(const RectD& frame, const IFillStylePtr& fillStyle, const ILineStylePtr& lineStyle);
+IShapePtr CreateEllipse(const RectD& frame, const IFillStylePtr& fillStyle, const ILineStylePtr& lineStyle);
 
 IGroupPtr CreateGroup();

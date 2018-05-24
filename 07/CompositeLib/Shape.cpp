@@ -4,56 +4,58 @@
 #include "ICanvas.h"
 #include "IStyle.h"
 
-CShape::CShape(const RectD& frame, IFillStylePtr fillStyle, ILineStylePtr lineStyle)
+CSimpleShape::CSimpleShape(const RectD& frame, IFillStylePtr fillStyle, ILineStylePtr lineStyle, DrawBehavior drawBehavior)
 	: m_frame(frame)
 	, m_lineStyle{ std::move(lineStyle) }
 	, m_fillStyle{ std::move(fillStyle) }
+	, m_drawBehavior{ std::move(drawBehavior) }
 {
 }
 
-CShape::CShape(const CShape& other)
+CSimpleShape::CSimpleShape(const CSimpleShape& other)
 	: m_frame(other.m_frame)
 	, m_fillStyle(other.m_fillStyle->Clone())
 	, m_lineStyle(other.m_lineStyle->Clone())
+	, m_drawBehavior(other.m_drawBehavior)
 {
 }
 
-RectD CShape::GetFrame() const
+RectD CSimpleShape::GetFrame() const
 {
 	return m_frame;
 }
 
-void CShape::SetFrame(const RectD& rect)
+void CSimpleShape::SetFrame(const RectD& rect)
 {
 	m_frame = rect;
 }
 
-ILineStylePtr CShape::GetLineStyle() const
+ILineStylePtr CSimpleShape::GetLineStyle() const
 {
 	return m_lineStyle;
 }
 
-void CShape::SetLineStyle(const ILineStylePtr& style)
+void CSimpleShape::SetLineStyle(const ILineStylePtr& style)
 {
 	m_lineStyle = style;
 }
 
-IFillStylePtr CShape::GetFillStyle() const
+IFillStylePtr CSimpleShape::GetFillStyle() const
 {
 	return m_fillStyle;
 }
 
-void CShape::SetFillStyle(const IFillStylePtr& style)
+void CSimpleShape::SetFillStyle(const IFillStylePtr& style)
 {
 	m_fillStyle = style;
 }
 
-IGroupPtr CShape::GetGroup()
+IGroupPtr CSimpleShape::GetGroup()
 {
 	return nullptr;
 }
 
-void CShape::Draw(ICanvas& canvas) const
+void CSimpleShape::Draw(ICanvas& canvas) const
 {
 	constexpr auto TRANSPARENT_COLOR = MakeColorRGBA(0, 0, 0, 0);
 
@@ -75,10 +77,15 @@ void CShape::Draw(ICanvas& canvas) const
 		canvas.SetLineWidth(0.f);
 	}
 
-	DrawBehavior(canvas);
+	m_drawBehavior(m_frame, canvas);
 
 	if (fillEnabled)
 	{
 		canvas.EndFill();
 	}
+}
+
+IShapePtr CSimpleShape::Clone() const
+{
+	return std::make_shared<CSimpleShape>(*this);
 }
