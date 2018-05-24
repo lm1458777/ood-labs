@@ -153,7 +153,7 @@ void CGroup::RemoveShapeAtIndex(size_t index)
 
 IShapePtr CGroup::Clone() const
 {
-	return std::make_shared<CGroup>(*this);
+	return std::shared_ptr<CGroup>(new CGroup(*this));
 }
 
 void AddShape(IGroup& group, const IShapePtr& shape)

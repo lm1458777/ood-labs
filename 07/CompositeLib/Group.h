@@ -6,12 +6,12 @@ class CGroup
 	, public std::enable_shared_from_this<IGroup>
 {
 public:
-	CGroup() = default;
-	CGroup(const CGroup& other);
-	CGroup(CGroup&&) = default;
+	static auto Create()
+	{
+		return std::shared_ptr<CGroup>(new CGroup);
+	}
 
 	CGroup& operator=(const CGroup& other) = delete;
-	CGroup& operator=(CGroup&&) = default;
 
 	IShapePtr Clone() const override;
 
@@ -32,6 +32,10 @@ public:
 	IShapePtr GetShapeAtIndex(size_t index) override;
 	void InsertShape(const IShapePtr& shape, size_t index) override;
 	void RemoveShapeAtIndex(size_t index) override;
+
+private:
+	CGroup() = default;
+	CGroup(const CGroup& other);
 
 private:
 	std::vector<IShapePtr> m_shapes;

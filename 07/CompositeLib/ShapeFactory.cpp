@@ -56,5 +56,5 @@ IShapePtr CreateEllipse(const RectD& frame, const IFillStylePtr& fillStyle, cons
 
 IGroupPtr CreateGroup()
 {
-	return std::make_shared<CGroup>();
+	return CGroup::Create();
 }
