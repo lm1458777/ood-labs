@@ -14,6 +14,13 @@ public:
 	virtual void SetColor(RGBAColor color) = 0;
 };
 
+bool operator==(const ILineStyle& style1, const ILineStyle& style2);
+
+inline bool operator==(const ILineStylePtr& style1, const ILineStylePtr& style2)
+{
+	return style1 && style2 && *style1 == *style2;
+}
+
 class IFillStyle : public IBaseStyle
 {
 public:
@@ -28,3 +35,11 @@ public:
 	virtual float GetWidth() const = 0;
 	virtual void SetWidth(float width) = 0;
 };
+
+bool operator==(const IFillStyle& style1, const IFillStyle& style2);
+
+inline bool operator==(const IFillStylePtr& style1, const IFillStylePtr& style2)
+{
+	return style1 && style2 && *style1 == *style2;
+}
+
