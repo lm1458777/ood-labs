@@ -169,9 +169,9 @@ void CGroup::RemoveShapeAtIndex(size_t index)
 	m_shapes.erase(m_shapes.begin() + index);
 }
 
-IShapeUniquePtr CGroup::Clone() const
+IShapePtr CGroup::Clone() const
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	return std::make_shared<CGroup>(*this);
 }
 
 void AddShape(IGroup& group, const IShapePtr& shape)

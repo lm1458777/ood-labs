@@ -11,7 +11,7 @@ class IShape
 public:
 	virtual ~IShape() = default;
 
-	virtual IShapeUniquePtr Clone() const = 0;
+	virtual IShapePtr Clone() const = 0;
 
 	virtual RectD GetFrame() const = 0;
 	virtual void SetFrame(const RectD& rect) = 0;

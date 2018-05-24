@@ -8,7 +8,12 @@ class CGroup
 public:
 	CGroup() = default;
 	CGroup(const CGroup& other);
+	CGroup(CGroup&&) = default;
+
 	CGroup& operator=(const CGroup& other) = delete;
+	CGroup& operator=(CGroup&&) = default;
+
+	IShapePtr Clone() const override;
 
 	RectD GetFrame() const override;
 	void SetFrame(const RectD& rect) override;
@@ -27,8 +32,6 @@ public:
 	IShapePtr GetShapeAtIndex(size_t index) override;
 	void InsertShape(const IShapePtr& shape, size_t index) override;
 	void RemoveShapeAtIndex(size_t index) override;
-
-	IShapeUniquePtr Clone() const override;
 
 private:
 	std::vector<IShapePtr> m_shapes;
