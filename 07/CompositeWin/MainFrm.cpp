@@ -72,8 +72,13 @@ auto CreateSlide()
 		RectD{ 500, 130, 150, 80 },
 		CreateNoFillStyle(),
 		CreateNoLineStyle()));
+	assert(group2->GetLineStyle() == nullptr);
 	group2->SetLineStyle(CreateLineStyle(MakeColorRGB(0x41, 0x71, 0x9c), 3.f));
+	assert(group2->GetLineStyle() != nullptr);
+
+	assert(group2->GetFillStyle() == nullptr);
 	group2->SetFillStyle(CreateFillStyle(MakeColorRGB(0x5b, 0x9b, 0xd5)));
+	assert(group2->GetFillStyle() != nullptr);
 	group2->SetFrame(RectD{ 10, 240, 640, 150 });
 
 	auto slide = make_unique<CSlide>(800, 600);
@@ -154,7 +159,6 @@ void CMainFrame::OnPaint(CDCHandle /*dc*/)
 	CMemoryDC memDC{ paintDC.m_hDC, paintDC.m_ps.rcPaint };
 
 	GdiCanvas canvas{ memDC.m_hDC };
-	bool remove_me;
 	CDCHandle dc{ memDC.m_hDC };
 	dc.FillSolidRect(&paintDC.m_ps.rcPaint, RGB(0, 0, 0));
 	m_slide->Draw(canvas);

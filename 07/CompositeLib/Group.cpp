@@ -5,29 +5,33 @@
 namespace
 {
 
-bool operator==(const IFillStylePtr& style1, const IFillStylePtr& style2)
-{
-	bool use_shared_ptr_eq;
-
-	return style1 && style2
-		&& style1->IsEnabled() == style2->IsEnabled()
-		&& style1->GetColor() == style2->GetColor();
-}
-
-bool operator==(const ILineStylePtr& style1, const ILineStylePtr& style2)
-{
-	return style1 && style2
-		&& style1->IsEnabled() == style2->IsEnabled()
-		&& style1->GetColor() == style2->GetColor()
-		&& style1->GetWidth() == style2->GetWidth();
-}
-
 auto CloneShapes(gsl::span<const IShapePtr> shapes)
 {
 	using namespace boost;
 	return copy_range<std::vector<IShapePtr>>(shapes | adaptors::transformed([](const IShapePtr& shape) -> IShapePtr {
 		return shape->Clone();
 	}));
+}
+
+template <class T, class StyleGetter>
+T GetStyle(gsl::span<const IShapePtr> shapes, StyleGetter styleGetter)
+{
+	if (shapes.empty())
+	{
+		return T{};
+	}
+
+	T style = std::invoke(styleGetter, *shapes.at(0));
+	if (shapes.size() == 1)
+	{
+		return style;
+	}
+
+	bool allShapesHasSameStyle = all_of(shapes.begin() + 1, shapes.end(), [&style, styleGetter](const IShapePtr& shape) {
+		return std::invoke(styleGetter, *shape) == style;
+	});
+
+	return allShapesHasSameStyle ? style : T{};
 }
 
 } // namespace
@@ -85,16 +89,7 @@ void CGroup::SetFrame(const RectD& rect)
 
 ILineStylePtr CGroup::GetLineStyle() const
 {
-	bool todo_fixme;
-	ILineStylePtr lineStyle;
-	if (!m_shapes.empty())
-	{
-		bool stylesEqual = std::all_of(m_shapes.cbegin(), m_shapes.cend(), [&](auto& shape) {
-			return shape->GetLineStyle() == m_shapes.front()->GetLineStyle();
-		});
-		lineStyle = stylesEqual ? m_shapes.front()->GetLineStyle() : nullptr;
-	}
-	return lineStyle;
+	return GetStyle<ILineStylePtr>(m_shapes, &IShape::GetLineStyle);
 }
 
 void CGroup::SetLineStyle(const ILineStylePtr& style)
@@ -106,16 +101,7 @@ void CGroup::SetLineStyle(const ILineStylePtr& style)
 
 IFillStylePtr CGroup::GetFillStyle() const
 {
-	bool todo_fixme;
-	IFillStylePtr fillStyle;
-	if (!m_shapes.empty())
-	{
-		bool stylesEqual = std::all_of(m_shapes.cbegin(), m_shapes.cend(), [&](auto& shape) {
-			return shape->GetFillStyle() == m_shapes.front()->GetFillStyle();
-		});
-		fillStyle = stylesEqual ? m_shapes.front()->GetFillStyle() : nullptr;
-	}
-	return fillStyle;
+	return GetStyle<IFillStylePtr>(m_shapes, &IShape::GetFillStyle);
 }
 
 void CGroup::SetFillStyle(const IFillStylePtr& style)
@@ -149,14 +135,10 @@ IShapePtr CGroup::GetShapeAtIndex(size_t index)
 
 void CGroup::InsertShape(const IShapePtr& shape, size_t index)
 {
-	bool TODO_CHECK_GT_GE;
-
-	if (index > m_shapes.size())
-	{
-		throw std::out_of_range("out of range");
-	}
-
-	m_shapes.insert(m_shapes.begin() + index, shape);
+	auto it = index < m_shapes.size()
+		? m_shapes.begin() + index
+		: m_shapes.end();
+	m_shapes.insert(it, shape);
 }
 
 void CGroup::RemoveShapeAtIndex(size_t index)
