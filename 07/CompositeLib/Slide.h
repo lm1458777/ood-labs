@@ -2,7 +2,6 @@
 #include "CommonTypes.h"
 #include "IGroup_fwd.h"
 #include "IShape_fwd.h"
-#include "IStyle_fwd.h"
 
 class ICanvas;
 
@@ -20,5 +19,4 @@ public:
 
 private:
 	IGroupPtr m_shapes;
-	IFillStylePtr m_backgroundFillStyle;
 };

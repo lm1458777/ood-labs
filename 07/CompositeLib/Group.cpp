@@ -13,43 +13,39 @@ auto CloneShapes(gsl::span<const IShapePtr> shapes)
 	}));
 }
 
-template <class T, class StyleGetter>
-T GetStyle(gsl::span<const IShapePtr> shapes, StyleGetter styleGetter)
-{
-	if (shapes.empty())
-	{
-		return T{};
-	}
-
-	auto getStyle = [styleGetter](const IShapePtr& shape) {
-		return std::invoke(styleGetter, *shape);
-	};
-
-	T style = getStyle(shapes.at(0));
-	if (shapes.size() == 1)
-	{
-		return style;
-	}
-
-	bool allShapesHasSameStyle = all_of(shapes.begin() + 1, shapes.end(), [&style, getStyle](const IShapePtr& shape) {
-		return getStyle(shape) == style;
-	});
-
-	return allShapesHasSameStyle ? style : T{};
-}
-
 } // namespace
 
-CGroup::CGroup(const CGroup& other)
-	: m_shapes(CloneShapes(other.m_shapes))
+CGroup::CGroup(std::vector<IShapePtr>&& shapes)
+	: m_shapes(std::move(shapes))
+	, m_fillStyle([this]() { return GetFillStyles(); })
+	, m_lineStyle([this]() { return GetLineStyles(); })
 {
+}
+
+CGroup::CGroup(const CGroup& other)
+	: CGroup(CloneShapes(other.m_shapes))
+{
+}
+
+FillStyleRange CGroup::GetFillStyles() const
+{
+	return m_shapes | boost::adaptors::transformed([](const IShapePtr& shape) -> IFillStyle& {
+		return shape->GetFillStyle();
+	});
+}
+
+LineStyleRange CGroup::GetLineStyles() const
+{
+	return m_shapes | boost::adaptors::transformed([](const IShapePtr& shape) -> ILineStyle& {
+		return shape->GetLineStyle();
+	});
 }
 
 RectD CGroup::GetFrame() const
 {
 	if (m_shapes.empty())
 	{
-		return RectDZero;
+		return RECT_ZERO;
 	}
 
 	auto getFrame = [](const IShapePtr& shape) {
@@ -84,28 +80,24 @@ void CGroup::SetFrame(const RectD& rect)
 	}
 }
 
-ILineStylePtr CGroup::GetLineStyle() const
+ILineStyle& CGroup::GetLineStyle()
 {
-	return GetStyle<ILineStylePtr>(m_shapes, &IShape::GetLineStyle);
+	return m_lineStyle;
 }
 
-void CGroup::SetLineStyle(const ILineStylePtr& style)
+const ILineStyle& CGroup::GetLineStyle() const
 {
-	boost::for_each(m_shapes, [&style](const auto& shape) {
-		shape->SetLineStyle(style);
-	});
+	return m_lineStyle;
 }
 
-IFillStylePtr CGroup::GetFillStyle() const
+IFillStyle& CGroup::GetFillStyle()
 {
-	return GetStyle<IFillStylePtr>(m_shapes, &IShape::GetFillStyle);
+	return m_fillStyle;
 }
 
-void CGroup::SetFillStyle(const IFillStylePtr& style)
+const IFillStyle& CGroup::GetFillStyle() const
 {
-	boost::for_each(m_shapes, [&style](const auto& shape) {
-		shape->SetFillStyle(style);
-	});
+	return m_fillStyle;
 }
 
 void CGroup::Draw(ICanvas& canvas) const

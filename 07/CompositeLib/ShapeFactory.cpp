@@ -39,17 +39,17 @@ void DrawEllipse(const RectD& frame, ICanvas& canvas)
 
 } // namespace
 
-IShapePtr CreateRectangle(const RectD& frame, const IFillStylePtr& fillStyle, const ILineStylePtr& lineStyle)
+IShapePtr CreateRectangle(const RectD& frame, const FillStyle& fillStyle, const LineStyle& lineStyle)
 {
 	return std::make_shared<CSimpleShape>(frame, fillStyle, lineStyle, &DrawRectangle);
 }
 
-IShapePtr CreateTriangle(const RectD& frame, const IFillStylePtr& fillStyle, const ILineStylePtr& lineStyle)
+IShapePtr CreateTriangle(const RectD& frame, const FillStyle& fillStyle, const LineStyle& lineStyle)
 {
 	return std::make_shared<CSimpleShape>(frame, fillStyle, lineStyle, &DrawTriangle);
 }
 
-IShapePtr CreateEllipse(const RectD& frame, const IFillStylePtr& fillStyle, const ILineStylePtr& lineStyle)
+IShapePtr CreateEllipse(const RectD& frame, const FillStyle& fillStyle, const LineStyle& lineStyle)
 {
 	return std::make_shared<CSimpleShape>(frame, fillStyle, lineStyle, &DrawEllipse);
 }

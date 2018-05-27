@@ -56,4 +56,4 @@ using PointD = PointT<double>;
 using RectD = Rect<double>;
 using RGBAColor = uint32_t;
 
-constexpr RectD RectDZero{ 0, 0, 0, 0 };
+constexpr RectD RECT_ZERO{ 0, 0, 0, 0 };

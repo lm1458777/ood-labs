@@ -1,9 +1,9 @@
 #pragma once
 #include "CommonTypes.h"
-#include "IStyle_fwd.h"
+#include "Style.h"
 
-IFillStylePtr CreateFillStyle(RGBAColor color, bool enable = true);
-IFillStylePtr CreateNoFillStyle();
+FillStyle CreateFillStyle(RGBAColor color, bool enable = true);
+FillStyle CreateNoFillStyle();
 
-ILineStylePtr CreateLineStyle(RGBAColor color, float width = 1.f, bool enable = true);
-ILineStylePtr CreateNoLineStyle();
+LineStyle CreateLineStyle(RGBAColor color, float width = 1.f, bool enable = true);
+LineStyle CreateNoLineStyle();

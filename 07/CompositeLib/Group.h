@@ -1,5 +1,6 @@
 #pragma once
 #include "IGroup.h"
+#include "GroupStyle.h"
 
 class CGroup
 	: public IGroup
@@ -8,7 +9,7 @@ class CGroup
 public:
 	static auto Create()
 	{
-		return std::shared_ptr<CGroup>(new CGroup);
+		return std::shared_ptr<CGroup>(new CGroup());
 	}
 
 	CGroup& operator=(const CGroup& other) = delete;
@@ -18,11 +19,11 @@ public:
 	RectD GetFrame() const override;
 	void SetFrame(const RectD& rect) override;
 
-	ILineStylePtr GetLineStyle() const override;
-	void SetLineStyle(const ILineStylePtr& style) override;
+	ILineStyle& GetLineStyle() override;
+	const ILineStyle& GetLineStyle() const override;
 
-	IFillStylePtr GetFillStyle() const override;
-	void SetFillStyle(const IFillStylePtr& style) override;
+	IFillStyle& GetFillStyle() override;
+	const IFillStyle& GetFillStyle() const override;
 
 	void Draw(ICanvas& canvas) const override;
 
@@ -34,9 +35,14 @@ public:
 	void RemoveShapeAtIndex(size_t index) override;
 
 private:
-	CGroup() = default;
+	explicit CGroup(std::vector<IShapePtr>&& shapes = {});
 	CGroup(const CGroup& other);
+
+	FillStyleRange GetFillStyles() const;
+	LineStyleRange GetLineStyles() const;
 
 private:
 	std::vector<IShapePtr> m_shapes;
+	GroupFillStyle m_fillStyle;
+	GroupLineStyle m_lineStyle;
 };

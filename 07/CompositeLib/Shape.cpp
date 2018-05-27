@@ -2,21 +2,36 @@
 #include "Shape.h"
 #include "ColorUtils.h"
 #include "ICanvas.h"
-#include "IStyle.h"
 
-CSimpleShape::CSimpleShape(const RectD& frame, IFillStylePtr fillStyle, ILineStylePtr lineStyle, DrawBehavior drawBehavior)
-	: m_frame(frame)
-	, m_lineStyle{ std::move(lineStyle) }
-	, m_fillStyle{ std::move(fillStyle) }
-	, m_drawBehavior{ std::move(drawBehavior) }
+namespace
 {
+constexpr auto TRANSPARENT_COLOR = MakeColorRGBA(0, 0, 0, 0);
+
+std::pair<RGBAColor, float> GetCanvasLineStyle(const ILineStyle& lineStyle)
+{
+	if (lineStyle.IsEnabled() == true)
+	{
+		auto colorOpt = lineStyle.GetColor();
+		if (colorOpt)
+		{
+			auto widthOpt = lineStyle.GetWidth();
+			if (widthOpt)
+			{
+				return { *colorOpt, *widthOpt };
+			}
+		}
+	}
+
+	return { TRANSPARENT_COLOR, 0.f };
 }
 
-CSimpleShape::CSimpleShape(const CSimpleShape& other)
-	: m_frame(other.m_frame)
-	, m_fillStyle(other.m_fillStyle->Clone())
-	, m_lineStyle(other.m_lineStyle->Clone())
-	, m_drawBehavior(other.m_drawBehavior)
+} // namespace
+
+CSimpleShape::CSimpleShape(const RectD& frame, const FillStyle& fillStyle, const LineStyle& lineStyle, DrawBehavior drawBehavior)
+	: m_frame(frame)
+	, m_fillStyle(fillStyle)
+	, m_lineStyle(lineStyle)
+	, m_drawBehavior{ std::move(drawBehavior) }
 {
 }
 
@@ -30,24 +45,24 @@ void CSimpleShape::SetFrame(const RectD& rect)
 	m_frame = rect;
 }
 
-ILineStylePtr CSimpleShape::GetLineStyle() const
+ILineStyle& CSimpleShape::GetLineStyle()
 {
 	return m_lineStyle;
 }
 
-void CSimpleShape::SetLineStyle(const ILineStylePtr& style)
+const ILineStyle& CSimpleShape::GetLineStyle() const
 {
-	m_lineStyle = style;
+	return m_lineStyle;
 }
 
-IFillStylePtr CSimpleShape::GetFillStyle() const
+IFillStyle& CSimpleShape::GetFillStyle()
 {
 	return m_fillStyle;
 }
 
-void CSimpleShape::SetFillStyle(const IFillStylePtr& style)
+const IFillStyle& CSimpleShape::GetFillStyle() const
 {
-	m_fillStyle = style;
+	return m_fillStyle;
 }
 
 IGroupPtr CSimpleShape::GetGroup()
@@ -57,29 +72,24 @@ IGroupPtr CSimpleShape::GetGroup()
 
 void CSimpleShape::Draw(ICanvas& canvas) const
 {
-	constexpr auto TRANSPARENT_COLOR = MakeColorRGBA(0, 0, 0, 0);
+	const auto fillColorOpt = m_fillStyle.IsEnabled() == true ? m_fillStyle.GetColor() : boost::none;
 
-	const bool fillEnabled = m_fillStyle && m_fillStyle->IsEnabled();
-
-	if (fillEnabled)
+	if (fillColorOpt)
 	{
-		canvas.BeginFill(m_fillStyle->GetColor());
+		canvas.BeginFill(*fillColorOpt);
 	}
 
-	if (m_lineStyle && m_lineStyle->IsEnabled())
 	{
-		canvas.SetLineColor(m_lineStyle->GetColor());
-		canvas.SetLineWidth(m_lineStyle->GetWidth());
-	}
-	else
-	{
-		canvas.SetLineColor(TRANSPARENT_COLOR);
-		canvas.SetLineWidth(0.f);
+		RGBAColor color;
+		float width;
+		std::tie(color, width) = GetCanvasLineStyle(m_lineStyle);
+		canvas.SetLineColor(color);
+		canvas.SetLineWidth(width);
 	}
 
 	m_drawBehavior(m_frame, canvas);
 
-	if (fillEnabled)
+	if (fillColorOpt)
 	{
 		canvas.EndFill();
 	}

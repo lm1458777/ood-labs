@@ -1,14 +1,29 @@
 #include "stdafx.h"
 #include "Style.h"
 
+namespace
+{
+
+void CopyBaseStyleValues(IBaseStyle& dest, const IBaseStyle& src)
+{
+	auto color = src.GetColor();
+	if (color.is_initialized())
+	{
+		dest.SetColor(*color);
+	}
+
+	auto isEnabled = src.IsEnabled();
+	if (isEnabled.is_initialized())
+	{
+		dest.Enable(*isEnabled);
+	}
+}
+
+} // namespace
+
 FillStyle::FillStyle(RGBAColor color, bool enable)
 	: IBaseStyleImpl(color, enable)
 {
-}
-
-IFillStylePtr FillStyle::Clone() const
-{
-	return std::make_unique<FillStyle>(*this);
 }
 
 LineStyle::LineStyle(RGBAColor color, float width, bool enable)
@@ -17,7 +32,7 @@ LineStyle::LineStyle(RGBAColor color, float width, bool enable)
 {
 }
 
-float LineStyle::GetWidth() const
+boost::optional<float> LineStyle::GetWidth() const
 {
 	return m_width;
 }
@@ -27,20 +42,18 @@ void LineStyle::SetWidth(float width)
 	m_width = width;
 }
 
-ILineStyleUniquePtr LineStyle::Clone() const
+void CopyValues(IFillStyle& dest, const IFillStyle& src)
 {
-	return std::make_unique<LineStyle>(*this);
+	CopyBaseStyleValues(dest, src);
 }
 
-bool operator==(const IFillStyle& style1, const IFillStyle& style2)
+void CopyValues(ILineStyle& dest, const ILineStyle& src)
 {
-	return style1.IsEnabled() == style2.IsEnabled()
-		&& style1.GetColor() == style2.GetColor();
-}
+	CopyBaseStyleValues(dest, src);
 
-bool operator==(const ILineStyle& style1, const ILineStyle& style2)
-{
-	return style1.IsEnabled() == style2.IsEnabled()
-		&& style1.GetColor() == style2.GetColor()
-		&& style1.GetWidth() == style2.GetWidth();
+	auto width = src.GetWidth();
+	if (width.is_initialized())
+	{
+		dest.SetWidth(*width);
+	}
 }

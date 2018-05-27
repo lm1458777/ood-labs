@@ -1,11 +1,12 @@
 #pragma once
+#include "ColorUtils.h"
 #include "IStyle.h"
 
 template <class T>
 class IBaseStyleImpl : public T
 {
 public:
-	bool IsEnabled() const override
+	boost::optional<bool> IsEnabled() const override
 	{
 		return m_isEnabled;
 	}
@@ -15,7 +16,7 @@ public:
 		m_isEnabled = enable;
 	}
 
-	RGBAColor GetColor() const override
+	boost::optional<RGBAColor> GetColor() const override
 	{
 		return m_color;
 	}
@@ -34,25 +35,22 @@ protected:
 
 private:
 	bool m_isEnabled = false;
-	RGBAColor m_color = 0;
+	RGBAColor m_color = BLACK_COLOR;
 };
 
 class FillStyle final : public IBaseStyleImpl<IFillStyle>
 {
 public:
-	FillStyle(RGBAColor color, bool enable = true);
-	IFillStylePtr Clone() const override;
+	FillStyle(RGBAColor color, bool enable);
 };
 
 class LineStyle final : public IBaseStyleImpl<ILineStyle>
 {
 public:
-	LineStyle(RGBAColor color, float width, bool enable = true);
+	LineStyle(RGBAColor color, float width, bool enable);
 
-	float GetWidth() const override;
+	boost::optional<float> GetWidth() const override;
 	void SetWidth(float width) override;
-
-	virtual ILineStyleUniquePtr Clone() const override;
 
 private:
 	float m_width = 1.f;

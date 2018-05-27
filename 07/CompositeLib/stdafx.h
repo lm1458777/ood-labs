@@ -21,5 +21,6 @@
 #include <boost/optional/optional.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/any_range.hpp>
 #include <boost/range/iterator_range_core.hpp>
 #include <boost/range/numeric.hpp>

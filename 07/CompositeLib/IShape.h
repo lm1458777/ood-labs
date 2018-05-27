@@ -16,11 +16,11 @@ public:
 	virtual RectD GetFrame() const = 0;
 	virtual void SetFrame(const RectD& rect) = 0;
 
-	virtual ILineStylePtr GetLineStyle() const = 0;
-	virtual void SetLineStyle(const ILineStylePtr& style) = 0;
+	virtual ILineStyle& GetLineStyle() = 0;
+	virtual const ILineStyle& GetLineStyle() const = 0;
 
-	virtual IFillStylePtr GetFillStyle() const = 0;
-	virtual void SetFillStyle(const IFillStylePtr& style) = 0;
+	virtual IFillStyle& GetFillStyle() = 0;
+	virtual const IFillStyle& GetFillStyle() const = 0;
 
 	virtual void Draw(ICanvas& canvas) const = 0;
 

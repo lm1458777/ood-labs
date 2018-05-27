@@ -48,3 +48,19 @@ constexpr auto MakeColorRGB(BYTE r, BYTE g, BYTE b)
 {
 	return MakeColorRGBA(r, g, b, 0xff);
 }
+
+constexpr RGBAColor MakeColorWithAlpha(RGBAColor color, BYTE alpha)
+{
+	return MakeColorRGBA(
+		GetRedValue(color),
+		GetGreenValue(color),
+		GetBlueValue(color),
+		alpha);
+}
+
+constexpr RGBAColor BLACK_COLOR = MakeColorRGB(0, 0, 0);
+constexpr RGBAColor WHITE_COLOR = MakeColorRGB(0xff, 0xff, 0xff);
+
+constexpr RGBAColor RED_COLOR = MakeColorRGB(0xff, 0, 0);
+constexpr RGBAColor GREEN_COLOR = MakeColorRGB(0, 0xff, 0);
+constexpr RGBAColor BLUE_COLOR = MakeColorRGB(0, 0, 0xff);

@@ -1,23 +1,22 @@
 #include "stdafx.h"
 #include "StyleFactory.h"
-#include "Style.h"
 
-IFillStylePtr CreateFillStyle(RGBAColor color, bool enable)
+FillStyle CreateFillStyle(RGBAColor color, bool enable)
 {
-	return std::make_shared<FillStyle>(color, enable);
+	return FillStyle(color, enable);
 }
 
-IFillStylePtr CreateNoFillStyle()
+FillStyle CreateNoFillStyle()
 {
 	return CreateFillStyle(0, false);
 }
 
-ILineStylePtr CreateLineStyle(RGBAColor color, float width, bool enable)
+LineStyle CreateLineStyle(RGBAColor color, float width, bool enable)
 {
-	return std::make_shared<LineStyle>(color, width, enable);
+	return LineStyle(color, width, enable);
 }
 
-ILineStylePtr CreateNoLineStyle()
+LineStyle CreateNoLineStyle()
 {
 	return CreateLineStyle(0, 0, false);
 }

@@ -15,3 +15,6 @@
 #include <tuple>
 
 #include <doctest/doctest.h>
+
+#include <boost/optional/optional.hpp>
+#include <boost/optional/optional_io.hpp>
