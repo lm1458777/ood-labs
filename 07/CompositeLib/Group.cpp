@@ -47,26 +47,19 @@ CGroup::CGroup(const CGroup& other)
 
 RectD CGroup::GetFrame() const
 {
-	RectD frame = {
-		std::numeric_limits<double>::infinity(),
-		std::numeric_limits<double>::infinity(),
-		-std::numeric_limits<double>::infinity(),
-		-std::numeric_limits<double>::infinity()
-	};
-	double maxRight = 0;
-	double maxBottom = 0;
-	for (const auto& shape : m_shapes)
+	if (m_shapes.empty())
 	{
-		auto shapeFrame = shape->GetFrame();
-		frame.left = std::min(shapeFrame.left, frame.left);
-		frame.top = std::min(shapeFrame.top, frame.top);
-		maxRight = std::max(shapeFrame.width + shapeFrame.left, maxRight);
-		maxBottom = std::max(shapeFrame.height + shapeFrame.top, maxBottom);
+		return RectDZero;
 	}
-	frame.width = maxRight - frame.left;
-	frame.height = maxBottom - frame.top;
 
-	return frame;
+	auto getFrame = [](const IShapePtr& shape) {
+		return shape->GetFrame();
+	};
+
+	auto unionRect = UnionRect<double>;
+
+	auto tailShapes = boost::make_iterator_range(m_shapes.begin() + 1, m_shapes.end());
+	return boost::accumulate(tailShapes | boost::adaptors::transformed(getFrame), getFrame(m_shapes.front()), unionRect);
 }
 
 void CGroup::SetFrame(const RectD& rect)
