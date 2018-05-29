@@ -1,49 +1,45 @@
 #include "stdafx.h"
 #include "Group.h"
 #include "IStyle.h"
+#include "ShapeRange.h"
 
-namespace
-{
+using boost::adaptors::transformed;
 
-auto CloneShapes(gsl::span<const IShapePtr> shapes)
-{
-	using namespace boost;
-	return copy_range<std::vector<IShapePtr>>(shapes | adaptors::transformed([](const IShapePtr& shape) -> IShapePtr {
-		return shape->Clone();
-	}));
-}
-
-} // namespace
-
-CGroup::CGroup(std::vector<IShapePtr>&& shapes)
-	: m_shapes(std::move(shapes))
+CGroup::CGroup(const Shapes& shapes)
+	: m_shapes(shapes)
 	, m_fillStyle([this]() { return GetFillStyles(); })
 	, m_lineStyle([this]() { return GetLineStyles(); })
 {
 }
 
 CGroup::CGroup(const CGroup& other)
-	: CGroup(CloneShapes(other.m_shapes))
+	: CGroup(other.m_shapes)
 {
+}
+
+auto CGroup::GetShapeRange() const
+{
+	return ::GetShapeRange(m_shapes);
 }
 
 FillStyleRange CGroup::GetFillStyles() const
 {
-	return m_shapes | boost::adaptors::transformed([](const IShapePtr& shape) -> IFillStyle& {
+	return GetShapeRange() | transformed([](const IShapePtr& shape) -> IFillStyle& {
 		return shape->GetFillStyle();
 	});
 }
 
 LineStyleRange CGroup::GetLineStyles() const
 {
-	return m_shapes | boost::adaptors::transformed([](const IShapePtr& shape) -> ILineStyle& {
+	return GetShapeRange() | transformed([](const IShapePtr& shape) -> ILineStyle& {
 		return shape->GetLineStyle();
 	});
 }
 
 RectD CGroup::GetFrame() const
 {
-	if (m_shapes.empty())
+	auto shapes = GetShapeRange();
+	if (shapes.begin() == shapes.end())
 	{
 		return RECT_ZERO;
 	}
@@ -54,8 +50,9 @@ RectD CGroup::GetFrame() const
 
 	auto unionRect = UnionRect<double>;
 
-	auto tailShapes = boost::make_iterator_range(m_shapes.begin() + 1, m_shapes.end());
-	return boost::accumulate(tailShapes | boost::adaptors::transformed(getFrame), getFrame(m_shapes.front()), unionRect);
+	auto headFrame = getFrame(*shapes.begin());
+	auto tailFrames = boost::make_iterator_range(++shapes.begin(), shapes.end()) | transformed(getFrame);
+	return boost::accumulate(tailFrames, headFrame, unionRect);
 }
 
 void CGroup::SetFrame(const RectD& rect)
@@ -65,8 +62,7 @@ void CGroup::SetFrame(const RectD& rect)
 	double ratioX = rect.width / oldFrame.width;
 	double ratioY = rect.height / oldFrame.height;
 
-	for (auto& shape : m_shapes)
-	{
+	auto updateFrame = [=](const IShapePtr& shape) {
 		auto shapeFrame = shape->GetFrame();
 		double paddingX = shapeFrame.left - oldFrame.left;
 		double paddingY = shapeFrame.top - oldFrame.top;
@@ -77,7 +73,9 @@ void CGroup::SetFrame(const RectD& rect)
 		shapeFrame.height *= ratioY;
 
 		shape->SetFrame(shapeFrame);
-	}
+	};
+
+	boost::for_each(GetShapeRange(), updateFrame);
 }
 
 ILineStyle& CGroup::GetLineStyle()
@@ -102,7 +100,7 @@ const IFillStyle& CGroup::GetFillStyle() const
 
 void CGroup::Draw(ICanvas& canvas) const
 {
-	boost::for_each(m_shapes, [&canvas](const auto& shape) {
+	boost::for_each(GetShapeRange(), [&canvas](const auto& shape) {
 		shape->Draw(canvas);
 	});
 }
@@ -114,38 +112,25 @@ IGroupPtr CGroup::GetGroup()
 
 size_t CGroup::GetShapesCount() const
 {
-	return m_shapes.size();
+	return m_shapes.GetShapesCount();
 }
 
-IShapePtr CGroup::GetShapeAtIndex(size_t index)
+IShapePtr CGroup::GetShapeAtIndex(size_t index) const
 {
-	return m_shapes.at(index);
+	return m_shapes.GetShapeAtIndex(index);
 }
 
 void CGroup::InsertShape(const IShapePtr& shape, size_t index)
 {
-	auto it = index < m_shapes.size()
-		? m_shapes.begin() + index
-		: m_shapes.end();
-	m_shapes.insert(it, shape);
+	m_shapes.InsertShape(shape, index);
 }
 
 void CGroup::RemoveShapeAtIndex(size_t index)
 {
-	if (index >= m_shapes.size())
-	{
-		throw std::out_of_range("Index is out of range");
-	}
-
-	m_shapes.erase(m_shapes.begin() + index);
+	m_shapes.RemoveShapeAtIndex(index);
 }
 
 IShapePtr CGroup::Clone() const
 {
 	return std::shared_ptr<CGroup>(new CGroup(*this));
-}
-
-void AddShape(IGroup& group, const IShapePtr& shape)
-{
-	group.InsertShape(shape, group.GetShapesCount());
 }

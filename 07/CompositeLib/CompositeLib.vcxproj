@@ -152,14 +152,17 @@
     <ClInclude Include="ICanvas.h" />
     <ClInclude Include="CommonTypes.h" />
     <ClInclude Include="Group.h" />
-    <ClInclude Include="IGroup.h" />
+    <ClInclude Include="IShapes.h" />
     <ClInclude Include="IGroup_fwd.h" />
     <ClInclude Include="IShape.h" />
+    <ClInclude Include="IGroup.h" />
     <ClInclude Include="IShape_fwd.h" />
     <ClInclude Include="IStyle.h" />
     <ClInclude Include="IStyle_fwd.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="ShapeFactory.h" />
+    <ClInclude Include="ShapeRange.h" />
+    <ClInclude Include="Shapes.h" />
     <ClInclude Include="Slide.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Style.h" />
@@ -171,6 +174,7 @@
     <ClCompile Include="GroupStyle.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="ShapeFactory.cpp" />
+    <ClCompile Include="Shapes.cpp" />
     <ClCompile Include="Slide.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
