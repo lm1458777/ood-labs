@@ -1,30 +1,26 @@
 #include "stdafx.h"
 #include "Slide.h"
 #include "ColorUtils.h"
-#include "IGroup.h"
+#include "IShape.h"
 #include "ShapeFactory.h"
+#include "ShapeRange.h"
+#include "Shapes.h"
 #include "StyleFactory.h"
 
 CSlide::CSlide(double width, double height)
-	: m_shapes{ CreateGroup() }
+	: m_background{ CreateRectangle(
+		  RectD{ 0, 0, width, height },
+		  CreateFillStyle(WHITE_COLOR),
+		  CreateNoLineStyle()) }
+	, m_shapes{ std::make_unique<Shapes>() }
 {
-	auto bgRect = CreateRectangle(
-		RectD{ 0, 0, width, height },
-		CreateFillStyle(WHITE_COLOR),
-		CreateNoLineStyle());
-	AddShape(bgRect);
 }
 
 CSlide::~CSlide() = default;
 
-RGBAColor CSlide::GetBackgroundColor() const
-{
-	return m_shapes->GetShapeAtIndex(0)->GetFillStyle().GetColor().value();
-}
-
 void CSlide::SetBackgroundColor(RGBAColor color)
 {
-	m_shapes->GetShapeAtIndex(0)->GetFillStyle().SetColor(color);
+	m_background->GetFillStyle().SetColor(color);
 }
 
 void CSlide::AddShape(const IShapePtr& shape)
@@ -34,5 +30,9 @@ void CSlide::AddShape(const IShapePtr& shape)
 
 void CSlide::Draw(ICanvas& canvas) const
 {
-	m_shapes->Draw(canvas);
+	m_background->Draw(canvas);
+
+	boost::for_each(GetShapeRange(*m_shapes), [&canvas](const IShapePtr& shape) {
+		shape->Draw(canvas);
+	});
 }
