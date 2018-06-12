@@ -50,8 +50,8 @@
 
 #define DOCTEST_VERSION_MAJOR 1
 #define DOCTEST_VERSION_MINOR 2
-#define DOCTEST_VERSION_PATCH 7
-#define DOCTEST_VERSION_STR "1.2.7"
+#define DOCTEST_VERSION_PATCH 9
+#define DOCTEST_VERSION_STR "1.2.9"
 
 #define DOCTEST_VERSION                                                                            \
     (DOCTEST_VERSION_MAJOR * 10000 + DOCTEST_VERSION_MINOR * 100 + DOCTEST_VERSION_PATCH)
@@ -73,7 +73,8 @@
 #endif
 #elif defined(__clang__) && defined(__clang_minor__)
 #define DOCTEST_CLANG DOCTEST_COMPILER(__clang_major__, __clang_minor__, __clang_patchlevel__)
-#elif defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__)
+#elif defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__) &&              \
+        !defined(__INTEL_COMPILER)
 #define DOCTEST_GCC DOCTEST_COMPILER(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
 #endif
 
@@ -179,6 +180,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
 
 DOCTEST_GCC_SUPPRESS_WARNING_PUSH
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunknown-pragmas")
+DOCTEST_GCC_SUPPRESS_WARNING("-Wpragmas")
 DOCTEST_GCC_SUPPRESS_WARNING("-Weffc++")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-overflow")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wstrict-aliasing")
@@ -187,15 +189,9 @@ DOCTEST_GCC_SUPPRESS_WARNING("-Wmissing-declarations")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wnon-virtual-dtor")
 DOCTEST_GCC_SUPPRESS_WARNING("-Winline")
 DOCTEST_GCC_SUPPRESS_WARNING("-Wlong-long")
-#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 7, 0)
 DOCTEST_GCC_SUPPRESS_WARNING("-Wzero-as-null-pointer-constant")
-#endif // GCC 4.7+
-#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 8, 0)
 DOCTEST_GCC_SUPPRESS_WARNING("-Wunused-local-typedefs")
-#endif // GCC 4.8+
-#if DOCTEST_GCC >= DOCTEST_COMPILER(5, 4, 0)
 DOCTEST_GCC_SUPPRESS_WARNING("-Wuseless-cast")
-#endif // GCC 5.4+
 
 DOCTEST_MSVC_SUPPRESS_WARNING_PUSH
 DOCTEST_MSVC_SUPPRESS_WARNING(4616) // invalid compiler warning
@@ -459,9 +455,11 @@ DOCTEST_CLANG_SUPPRESS_WARNING("-Wc++98-compat-pedantic")
 #if DOCTEST_MSVC
 #define DOCTEST_NOINLINE __declspec(noinline)
 #define DOCTEST_UNUSED
+#define DOCTEST_ALIGNMENT(x)
 #else // MSVC
 #define DOCTEST_NOINLINE __attribute__((noinline))
 #define DOCTEST_UNUSED __attribute__((unused))
+#define DOCTEST_ALIGNMENT(x) __attribute__((aligned(x)))
 #endif // MSVC
 
 #ifndef DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK
@@ -729,11 +727,13 @@ public:
         return data.ptr;
     }
 
+    DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wmaybe-uninitialized")
     unsigned size() const {
         if(isOnStack())
             return last - (unsigned(buf[last]) & 31); // using "last" would work only if "len" is 32
         return data.size;
     }
+    DOCTEST_GCC_SUPPRESS_WARNING_POP
 
     unsigned capacity() const {
         if(isOnStack())
@@ -754,7 +754,7 @@ inline bool operator<=(const String& lhs, const String& rhs) { return (lhs != rh
 inline bool operator>=(const String& lhs, const String& rhs) { return (lhs != rhs) ? lhs.compare(rhs) > 0 : true; }
 // clang-format on
 
-DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& stream, const String& in);
+DOCTEST_INTERFACE std::ostream& operator<<(std::ostream& s, const String& in);
 
 namespace detail
 {
@@ -820,8 +820,7 @@ namespace detail
     struct has_insertion_operator : has_insertion_operator_impl::has_insertion_operator<T>
     {};
 
-    DOCTEST_INTERFACE void     my_memcpy(void* dest, const void* src, unsigned num);
-    DOCTEST_INTERFACE unsigned my_strlen(const char* in);
+    DOCTEST_INTERFACE void my_memcpy(void* dest, const void* src, unsigned num);
 
     DOCTEST_INTERFACE std::ostream* createStream();
     DOCTEST_INTERFACE String getStreamResult(std::ostream*);
@@ -841,10 +840,10 @@ namespace detail
     {
         template <typename T>
         static String convert(const DOCTEST_REF_WRAP(T) in) {
-            std::ostream* stream = createStream();
-            *stream << in;
-            String result = getStreamResult(stream);
-            freeStream(stream);
+            std::ostream* s = createStream();
+            *s << in;
+            String result = getStreamResult(s);
+            freeStream(s);
             return result;
         }
     };
@@ -1241,7 +1240,7 @@ namespace detail
         };
     } // namespace assertType
 
-    DOCTEST_INTERFACE const char* getAssertString(assertType::Enum val);
+    DOCTEST_INTERFACE const char* assertString(assertType::Enum val);
 
     // clang-format off
     template<class T>               struct decay_array       { typedef T type; };
@@ -1259,9 +1258,8 @@ namespace detail
     {
     };
 
-    DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum assert_type);
+    DOCTEST_INTERFACE bool checkIfShouldThrow(assertType::Enum at);
     DOCTEST_INTERFACE void fastAssertThrowIfFlagSet(int flags);
-    DOCTEST_INTERFACE void throwException();
 
     struct TestAccessibleContextState
     {
@@ -1364,9 +1362,7 @@ namespace detail
     DOCTEST_GCC_SUPPRESS_WARNING_PUSH
     DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-conversion")
     DOCTEST_GCC_SUPPRESS_WARNING("-Wsign-compare")
-    //#if DOCTEST_GCC >= DOCTEST_COMPILER(4, 6, 0)
     //DOCTEST_GCC_SUPPRESS_WARNING("-Wdouble-promotion")
-    //#endif // GCC
     //DOCTEST_GCC_SUPPRESS_WARNING("-Wconversion")
     //DOCTEST_GCC_SUPPRESS_WARNING("-Wfloat-equal")
 
@@ -1442,9 +1438,9 @@ namespace detail
         L                lhs;
         assertType::Enum m_assert_type;
 
-        explicit Expression_lhs(L in, assertType::Enum assert_type)
+        explicit Expression_lhs(L in, assertType::Enum at)
                 : lhs(in)
-                , m_assert_type(assert_type) {}
+                , m_assert_type(at) {}
 
         DOCTEST_NOINLINE operator Result() {
             bool res = !!lhs;
@@ -1459,15 +1455,15 @@ namespace detail
         // clang-format off
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(==, " == ", DOCTEST_CMP_EQ) //!OCLINT bitwise operator in conditional
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(!=, " != ", DOCTEST_CMP_NE) //!OCLINT bitwise operator in conditional
-        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>, " >  ", DOCTEST_CMP_GT) //!OCLINT bitwise operator in conditional
-        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<, " <  ", DOCTEST_CMP_LT) //!OCLINT bitwise operator in conditional
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>,  " >  ", DOCTEST_CMP_GT) //!OCLINT bitwise operator in conditional
+        DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<,  " <  ", DOCTEST_CMP_LT) //!OCLINT bitwise operator in conditional
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(>=, " >= ", DOCTEST_CMP_GE) //!OCLINT bitwise operator in conditional
         DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(<=, " <= ", DOCTEST_CMP_LE) //!OCLINT bitwise operator in conditional
         // clang-format on
 
         // forbidding some expressions based on this table: http://en.cppreference.com/w/cpp/language/operator_precedence
         DOCTEST_FORBIT_EXPRESSION(&)
-        DOCTEST_FORBIT_EXPRESSION (^)
+        DOCTEST_FORBIT_EXPRESSION(^)
         DOCTEST_FORBIT_EXPRESSION(|)
         DOCTEST_FORBIT_EXPRESSION(&&)
         DOCTEST_FORBIT_EXPRESSION(||)
@@ -1500,8 +1496,8 @@ namespace detail
     {
         assertType::Enum m_assert_type;
 
-        ExpressionDecomposer(assertType::Enum assert_type)
-                : m_assert_type(assert_type) {}
+        ExpressionDecomposer(assertType::Enum at)
+                : m_assert_type(at) {}
 
         // The right operator for capturing expressions is "<=" instead of "<<" (based on the operator precedence table)
         // but then there will be warnings from GCC about "-Wparentheses" and since "_Pragma()" is problematic this will stay for now...
@@ -1558,33 +1554,6 @@ namespace detail
     DOCTEST_INTERFACE int regTest(const TestCase& tc);
     DOCTEST_INTERFACE int setTestSuite(const TestSuite& ts);
 
-    DOCTEST_INTERFACE void addFailedAssert(assertType::Enum assert_type);
-
-    DOCTEST_INTERFACE void logTestStart(const TestCase& tc);
-    DOCTEST_INTERFACE void logTestEnd();
-
-    DOCTEST_INTERFACE void logTestException(const String& what, bool crash = false);
-
-    DOCTEST_INTERFACE void logAssert(bool passed, const char* decomposition, bool threw,
-                                     const String& exception, const char* expr,
-                                     assertType::Enum assert_type, const char* file, int line);
-
-    DOCTEST_INTERFACE void logAssertThrows(bool threw, const char* expr,
-                                           assertType::Enum assert_type, const char* file,
-                                           int line);
-
-    DOCTEST_INTERFACE void logAssertThrowsAs(bool threw, bool threw_as, const char* as,
-                                             const String& exception, const char* expr,
-                                             assertType::Enum assert_type, const char* file,
-                                             int line);
-
-    DOCTEST_INTERFACE void logAssertNothrow(bool threw, const String& exception, const char* expr,
-                                            assertType::Enum assert_type, const char* file,
-                                            int line);
-
-    DOCTEST_INTERFACE bool isDebuggerActive();
-    DOCTEST_INTERFACE void writeToDebugConsole(const String&);
-
     namespace binaryAssertComparison
     {
         enum Enum
@@ -1622,7 +1591,7 @@ namespace detail
         bool   m_failed;
         String m_exception;
 
-        ResultBuilder(assertType::Enum assert_type, const char* file, int line, const char* expr,
+        ResultBuilder(assertType::Enum at, const char* file, int line, const char* expr,
                       const char* exception_type = "");
 
         ~ResultBuilder();
@@ -1665,11 +1634,10 @@ namespace detail
     } // namespace assertAction
 
     template <int comparison, typename L, typename R>
-    DOCTEST_NOINLINE int fast_binary_assert(assertType::Enum assert_type, const char* file,
-                                            int line, const char* expr,
-                                            const DOCTEST_REF_WRAP(L) lhs,
+    DOCTEST_NOINLINE int fast_binary_assert(assertType::Enum at, const char* file, int line,
+                                            const char* expr, const DOCTEST_REF_WRAP(L) lhs,
                                             const DOCTEST_REF_WRAP(R) rhs) {
-        ResultBuilder rb(assert_type, file, line, expr);
+        ResultBuilder rb(at, file, line, expr);
 
         rb.m_result.m_passed = RelationalComparator<comparison, L, R>()(lhs, rhs);
 
@@ -1681,7 +1649,7 @@ namespace detail
         if(rb.log())
             res |= assertAction::dbgbreak;
 
-        if(rb.m_failed && checkIfShouldThrow(assert_type))
+        if(rb.m_failed && checkIfShouldThrow(at))
             res |= assertAction::shouldthrow;
 
 #ifdef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
@@ -1698,13 +1666,13 @@ namespace detail
     }
 
     template <typename L>
-    DOCTEST_NOINLINE int fast_unary_assert(assertType::Enum assert_type, const char* file, int line,
+    DOCTEST_NOINLINE int fast_unary_assert(assertType::Enum at, const char* file, int line,
                                            const char* val_str, const DOCTEST_REF_WRAP(L) val) {
-        ResultBuilder rb(assert_type, file, line, val_str);
+        ResultBuilder rb(at, file, line, val_str);
 
         rb.m_result.m_passed = !!val;
 
-        if(assert_type & assertType::is_false) //!OCLINT bitwise operator in conditional
+        if(at & assertType::is_false) //!OCLINT bitwise operator in conditional
             rb.m_result.m_passed = !rb.m_result.m_passed;
 
         if(!rb.m_result.m_passed || getTestsContextState()->success)
@@ -1715,7 +1683,7 @@ namespace detail
         if(rb.log())
             res |= assertAction::dbgbreak;
 
-        if(rb.m_failed && checkIfShouldThrow(assert_type))
+        if(rb.m_failed && checkIfShouldThrow(at))
             res |= assertAction::shouldthrow;
 
 #ifdef DOCTEST_CONFIG_SUPER_FAST_ASSERTS
@@ -1767,29 +1735,27 @@ namespace detail
 
     // FIX FOR VISUAL STUDIO VERSIONS PRIOR TO 2015 - they failed to compile the call to operator<< with
     // std::ostream passed as a reference noting that there is a use of an undefined type (which there isn't)
-    DOCTEST_INTERFACE void writeStringToStream(std::ostream* stream, const String& str);
+    DOCTEST_INTERFACE void writeStringToStream(std::ostream* s, const String& str);
 
     template <bool C>
     struct StringStreamBase
     {
         template <typename T>
-        static void convert(std::ostream* stream, const T& in) {
-            writeStringToStream(stream, toString(in));
+        static void convert(std::ostream* s, const T& in) {
+            writeStringToStream(s, toString(in));
         }
 
         // always treat char* as a string in this context - no matter
         // if DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING is defined
-        static void convert(std::ostream* stream, const char* in) {
-            writeStringToStream(stream, String(in));
-        }
+        static void convert(std::ostream* s, const char* in) { writeStringToStream(s, String(in)); }
     };
 
     template <>
     struct StringStreamBase<true>
     {
         template <typename T>
-        static void convert(std::ostream* stream, const T& in) {
-            *stream << in;
+        static void convert(std::ostream* s, const T& in) {
+            *s << in;
         }
     };
 
@@ -1798,32 +1764,32 @@ namespace detail
     {};
 
     template <typename T>
-    void toStream(std::ostream* stream, const T& value) {
-        StringStream<T>::convert(stream, value);
+    void toStream(std::ostream* s, const T& value) {
+        StringStream<T>::convert(s, value);
     }
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, char* in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, const char* in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char* in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, const char* in);
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, bool in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, float in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, double in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, double long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, bool in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, float in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, double in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, double long in);
 
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, char in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, char signed in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, char unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int short in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int short unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int unsigned in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char signed in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, char unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int short in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int short unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long unsigned in);
 
 #ifdef DOCTEST_CONFIG_WITH_LONG_LONG
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long long in);
-    DOCTEST_INTERFACE void toStream(std::ostream* stream, int long long unsigned in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long in);
+    DOCTEST_INTERFACE void toStream(std::ostream* s, int long long unsigned in);
 #endif // DOCTEST_CONFIG_WITH_LONG_LONG
 
     struct IContextScope
@@ -1854,14 +1820,15 @@ namespace detail
 
             explicit Capture(const T* in)
                     : capture(in) {}
-            virtual void toStream(std::ostream* stream) const { // override
-                detail::toStream(stream, *capture);
+            virtual void toStream(std::ostream* s) const { // override
+                detail::toStream(s, *capture);
             }
         };
 
         struct Chunk
         {
-            char buf[sizeof(Capture<char>)]; // place to construct a Capture<T>
+            char buf[sizeof(Capture<char>)] DOCTEST_ALIGNMENT(
+                    2 * sizeof(void*)); // place to construct a Capture<T>
         };
 
         struct Node
@@ -1875,19 +1842,21 @@ namespace detail
         Node* head;
         Node* tail;
 
-        void build(std::ostream* stream) const {
+        DOCTEST_GCC_SUPPRESS_WARNING_WITH_PUSH("-Wcast-align")
+        void build(std::ostream* s) const {
             int curr = 0;
             // iterate over small buffer
             while(curr < numCaptures && curr < DOCTEST_CONFIG_NUM_CAPTURES_ON_STACK)
-                reinterpret_cast<const ICapture*>(stackChunks[curr++].buf)->toStream(stream);
+                reinterpret_cast<const ICapture*>(stackChunks[curr++].buf)->toStream(s);
             // iterate over list
             Node* curr_elem = head;
             while(curr < numCaptures) {
-                reinterpret_cast<const ICapture*>(curr_elem->chunk.buf)->toStream(stream);
+                reinterpret_cast<const ICapture*>(curr_elem->chunk.buf)->toStream(s);
                 curr_elem = curr_elem->next;
                 ++curr;
             }
         }
+        DOCTEST_GCC_SUPPRESS_WARNING_POP
 
         // steal the contents of the other - acting as a move constructor...
         DOCTEST_NOINLINE ContextBuilder(ContextBuilder& other)
@@ -1959,25 +1928,19 @@ namespace detail
     class ContextScope : public IContextScope
     {
         ContextBuilder contextBuilder;
-        bool           built;
 
     public:
         DOCTEST_NOINLINE explicit ContextScope(ContextBuilder& temp)
-                : contextBuilder(temp)
-                , built(false) {
+                : contextBuilder(temp) {
             addToContexts(this);
         }
 
         DOCTEST_NOINLINE ~ContextScope() {
-            if(!built)
-                useContextIfExceptionOccurred(this);
+            useContextIfExceptionOccurred(this);
             popFromContexts();
         }
 
-        void build(std::ostream* stream) {
-            built = true;
-            contextBuilder.build(stream);
-        }
+        void build(std::ostream* s) { contextBuilder.build(s); }
     };
 
     class DOCTEST_INTERFACE MessageBuilder
@@ -1997,6 +1960,7 @@ namespace detail
             return *this;
         }
 
+        void log(std::ostream&);
         bool log();
         void react();
     };
