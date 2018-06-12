@@ -1,0 +1,9 @@
+SetTitle doc title 123
+InsertParagraph end img16
+InsertImage end 128 64 D:\media\img16.png
+InsertParagraph end img26.jpg
+InsertImage end 192 48 D:\media\img26.jpg
+InsertParagraph end The End
+Save D:\temp\05\index.html
+List
+Exit
