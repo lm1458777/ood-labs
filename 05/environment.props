@@ -3,10 +3,10 @@
   <PropertyGroup Label="UserMacros">
     <EnvironmentPropsImported>true</EnvironmentPropsImported>
     <SdkDir>$(SDK_2012)</SdkDir>
-    <BoostDir>$(SdkDir)\boost_1_67_0</BoostDir>
-    <BoostIncludeDir>$(BoostDir)</BoostIncludeDir>
-    <BoostLibDir Condition="'$(Platform)'=='Win32'" >$(BoostDir)\stage\lib</BoostLibDir>
-    <BoostLibDir Condition="'$(Platform)'=='x64'" >$(BoostDir)\stage\lib</BoostLibDir>
+    <BoostDir>$(SdkDir)\boost_1_61_0</BoostDir>
+    <BoostIncludeDir>$(BoostDir)\include</BoostIncludeDir>
+    <BoostLibDir Condition="'$(Platform)'=='Win32'" >$(BoostDir)\lib\noxp</BoostLibDir>
+    <BoostLibDir Condition="'$(Platform)'=='x64'" >$(BoostDir)\lib\noxp\x64</BoostLibDir>
   </PropertyGroup>
   <ItemGroup>
     <BuildMacro Include="SdkDir">
