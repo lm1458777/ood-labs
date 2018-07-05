@@ -1,0 +1,37 @@
+SetTitle doc title 123
+InsertParagraph end 1
+InsertImage end 10 20 D:\media\img16.png
+ReplaceText 0 new text 1
+ResizeImage 1 48 24 
+InsertParagraph end 5
+InsertParagraph end 6
+InsertParagraph end 7
+InsertParagraph end 8
+InsertParagraph end 9
+InsertParagraph end 10
+InsertParagraph end 11
+List
+Undo
+Undo
+Undo
+Undo
+Undo
+Undo
+Undo
+Undo
+Undo
+Undo
+Undo
+List
+Redo
+Redo
+Redo
+Redo
+Redo
+Redo
+Redo
+Redo
+Redo
+Redo
+List
+Exit
