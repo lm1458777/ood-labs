@@ -9,8 +9,8 @@ class Document final : public IDocument
 public:
 	explicit Document(const IFileSystemPtr& fs);
 
-	IParagraphPtr InsertParagraph(const std::string& text, MayBeEndPosition position = boost::none) override;
-	IImagePtr InsertImage(const Path& path, Size imageSize, MayBeEndPosition position = boost::none) override;
+	IParagraphPtr InsertParagraph(const std::string& text, MayBeEndPosition position = EndPos) override;
+	IImagePtr InsertImage(const Path& path, Size imageSize, MayBeEndPosition position = EndPos) override;
 
 	size_t GetItemsCount() const override;
 	IDocumentItemPtr GetItem(size_t index) override;

@@ -11,8 +11,8 @@ class IDocument
 public:
 	virtual ~IDocument() = default;
 
-	virtual IParagraphPtr InsertParagraph(const std::string& text, MayBeEndPosition position = boost::none) = 0;
-	virtual IImagePtr InsertImage(const Path& path, Size imageSize, MayBeEndPosition position = boost::none) = 0;
+	virtual IParagraphPtr InsertParagraph(const std::string& text, MayBeEndPosition position = EndPos) = 0;
+	virtual IImagePtr InsertImage(const Path& path, Size imageSize, MayBeEndPosition position = EndPos) = 0;
 
 	virtual size_t GetItemsCount() const = 0;
 	virtual IDocumentItemPtr GetItem(size_t index) = 0;
